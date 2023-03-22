@@ -1,0 +1,124 @@
+.navbar a:hover:not(.navbar-brand) {
+    text-decoration: underline;
+}
+.tag-background {
+    background-color: lightgray;
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+.text-center{
+    margin-top:105px
+}
+.card-deck{
+    margin-top: 55px;
+}
+button.btn.btn-primary {
+    margin-top: 50px;
+    position: absolute;
+    right: 50px;
+}
+
+
+.card-title h6{
+    background-color: #c7d9ff;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 10px;
+
+}
+
+.card-title:hover h6{
+    background-color: #a4b9ff;
+}
+
+.tooltip-text {
+    position: absolute;
+    z-index: 1;
+    background-color: #192733;
+    color: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: normal;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+}
+
+.card-title:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+
+}
+
+#bottom {
+    top: 25px;
+    left: -50%;
+}
+
+.tag-card{
+    border: 1px solid Gray;
+    padding: 10px;
+    font-size: 12px;
+
+}
+.tag-card h6 {
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.search-box{
+    width: fit-content;
+    height: fit-content;
+    position: relative;
+}
+.input-search{
+    height: 50px;
+    width: 50px;
+    border-style: none;
+    padding: 10px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    outline: none;
+    border-radius: 25px;
+    transition: all .5s ease-in-out;
+    background-color: #a4b9ff;
+    padding-right: 40px;
+    color:black;
+}
+.input-search::placeholder{
+    color:Black;
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 100;
+}
+.btn-search{
+    width: 50px;
+    height: 50px;
+    border-style: none;
+    font-size: 20px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    border-radius: 50%;
+    position: absolute;
+    right: 0px;
+    color:Black;
+    background-color:transparent;
+    pointer-events: painted;
+}
+.btn-search:focus ~ .input-search{
+    width: 300px;
+    border-radius: 0px;
+    background-color: #a4b9ff;
+    border-bottom:1px solid Black;
+}
+.input-search:focus{
+    width: 300px;
+    border-radius: 0px;
+    background-color: #a4b9ff;
+    border-bottom:1px solid Black;
+}

@@ -1,0 +1,268 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!--    <link rel="stylesheet" href="/css/form.css">-->
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+    <!--    <script type="text/javascript" defer th:src="@{/js/create-question-form-validation.js}"></script>-->
+    <!-- Include the library CSS -->
+    <link rel="stylesheet" href="/css/countrySelect.min.css">
+    <link rel="stylesheet" th:href="@{/css/countrySelect.css}">
+
+
+    <!-- Include the library JavaScript -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/countrySelect.js"></script>
+
+
+</head>
+<body>
+
+<div class="vh-100 " style="height: 90%">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div th:if="${popup}">
+        <div th:replace="~{fragments/utils.html :: notifyPopUp(${popup})}"></div>
+    </div>
+
+    <div class="container mh-10">
+        <section class="vh-100" style="background-color: #eee">
+            <div class="container pb-4">
+                <div class="row">
+                    <div class="col">
+                        <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6">
+                            <h1>Register account</h1>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Register</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <hr class="hr hr-blurry"/>
+
+                <div>
+                    <!-- Jumbotron -->
+                    <div class="card px-4 py-5 px-md-5 text-center text-lg-start" style="background-color: hsl(0, 0%, 96%)">
+                        <div class="container">
+                            <div class="row gx-lg-5 align-items-center">
+                                <div class="col-lg-6 mb-5 mb-lg-0">
+                                    <h1 class="my-5 display-3 fw-bold ls-tight">
+                                        The path is here <br/>
+                                        <span class="text-primary">one more step</span>
+                                    </h1>
+                                    <p style="color: hsl(217, 10%, 50.8%)">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                        Eveniet, itaque accusantium odio, soluta, corrupti aliquam
+                                        quibusdam tempora at cupiditate quis eum maiores libero
+                                        veritatis? Dicta facilis sint aliquid ipsum atque?
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-6 mb-5 mb-lg-0">
+                                    <div class="card">
+                                        <div class="card-body py-5 px-md-5">
+                                            <form th:action="@{/register}" method="post" th:object="${User}"
+                                                  class="was-vlidated needs-validation"
+                                            >
+                                                <div th:if="${error}" class="note note-danger mb-3">
+                                                    <span th:text="${error}"></span>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline mb-4">
+                                                            <input id="firstname" class="form-control" type="text"
+                                                                   th:field="*{firstname}"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   required/>
+                                                            <label for="firstname" class="form-label">First name</label>
+                                                            <span class="text-danger small"
+                                                                  th:if="${#fields.hasErrors('firstname')}"
+                                                                  th:errors="*{firstname}">First name Invalid</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline mb-4 ">
+                                                            <input id="lastname" class="form-control" type="text"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   th:field="*{lastname}" required/>
+                                                            <label for="lastname" class="form-label">Last Name</label>
+                                                            <span class="text-danger small"
+                                                                  th:if="${#fields.hasErrors('lastname')}"
+                                                                  th:errors="*{lastname}">Lastname Invalid</span>
+                                                            <!--                                        <div class="valid-feedback"><i class="fas fa-check-double"></i></div>-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-outline mb-4">
+                                                    <input id="username" class="form-control" type="text"
+                                                           th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                           th:field="*{username}" required/>
+                                                    <label for="username" class="form-label">Username</label>
+                                                    <div class="text-danger small"
+                                                         th:if="${#fields.hasErrors('username')}"
+                                                         th:errors="*{username}">Username Invalid
+                                                    </div>
+                                                    <span class="text-danger small" th:if="${usernamecheck}"
+                                                          th:text="${usernamecheck}"></span>
+                                                    <span class="text-danger small invalid-feedback"
+                                                          th:if="${#fields.hasErrors('username')}"
+                                                          th:errors="*{username}"></span>
+                                                    <!--                                        <div class="valid-feedback"><i class="fas fa-check-double"></i></div>-->
+
+                                                </div>
+
+                                                <div class="form-outline mb-4">
+                                                    <input id="email" class="form-control" type="text"
+                                                           th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                           th:field="*{email}" required/>
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <span class="text-danger small"
+                                                          th:if="${#fields.hasErrors('email')}"
+                                                          th:errors="*{email}">Email Invalid</span>
+                                                </div>
+
+
+                                                <div class="form-outline mb-4">
+                                                    <input id="password" class="form-control" type="password"
+                                                           th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                           th:field="*{password}" required/>
+                                                    <label for="password" class="form-label">Password</label>
+                                                    <span class="text-danger small"
+                                                          th:if="${#fields.hasErrors('password')}"
+                                                          th:errors="*{password}">Password Invalid</span>
+                                                    <!--                                        <div class="valid-feedback"><i class="fas fa-check-double"></i></div>-->
+
+                                                </div>
+
+                                                <div class="form-outline mb-4">
+                                        <textarea
+                                                class="form-control" id="bio" rows="4"
+                                                th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                th:field="*{bio}"></textarea>
+                                                    <label class="form-label" for="bio">Bio</label>
+                                                </div>
+
+                                                <!--                                    Address-->
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline">
+                                                            <input type="text" class="form-control" id="street-input"
+                                                                   name="street"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   th:field="*{address.street}"
+                                                                   placeholder="Enter your street address">
+                                                            <label for="street-input" class="form-label">Street</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline">
+                                                            <input type="text" class="form-control" id="city-input"
+                                                                   name="city"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   th:field="*{address.city}"
+                                                                   placeholder="Enter your city">
+                                                            <label for="city-input" class="form-label">City</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline text-dark">
+                                                            <label for="country_selector"></label>
+                                                            <input id="country_selector"
+                                                                   class="form-control ms-2"
+                                                                   type="text" name="country"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   th:field="*{address.country}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 mb-4">
+                                                        <div class="form-outline col-6 mb-4">
+                                                            <input type="text" class="form-control" id="zipcode-input"
+                                                                   name="zipcode"
+                                                                   th:classappend="${#fields.hasErrors('firstname')} ? 'is-invalid' : ''"
+                                                                   th:field="*{address.zipCode}"
+                                                                   placeholder="Enter your zip code">
+                                                            <label for="zipcode-input" class="form-label">Zip
+                                                                Code</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-outline mb-4" style="display:none;">
+                                                    <input type="text" id="country_selector_code"
+                                                           name="country_selector_code"
+                                                           data-countrycodeinput="1" readonly="readonly"
+                                                           placeholder="Selected country code will appear here"/>
+                                                    <label for="country_selector_code">...and the selected country code
+                                                        will
+                                                        be
+                                                        updated here</label>
+                                                </div>
+
+                                                <script>
+                                                    $("#country_selector").countrySelect({
+                                                        defaultCountry: "fr",
+                                                        //     countryFlag: true,
+                                                        responsiveDropdown: true,
+                                                        preferredCountries: ['fr', 'ca', 'gb', 'us']
+                                                    });
+                                                </script>
+
+                                                <!-- Submit button -->
+                                                <button type="submit" class="btn btn-primary btn-block mb-4">
+                                                    Register
+                                                </button>
+
+                                                <div class="row">
+                                                    <p>Already blessed?
+                                                        <a href="/signtext-danger small"
+                                                           class="btn-link btn-floating mx-1">
+                                                            <u>
+                                                                Sign in
+                                                            </u>
+                                                        </a>
+                                                    </p>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+
+    </footer>
+</body>
+</html>

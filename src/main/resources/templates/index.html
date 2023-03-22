@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UGE Overflow </title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+    <link rel="stylesheet" th:href="@{/css/prism.css}"/>
+    <script type="text/javascript" defer th:src="@{/js/prism.js}"></script>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header}"></header>
+
+<div th:if="${popup}">
+    <div th:replace="~{fragments/utils :: notifyPopUp(${popup})}"></div>
+</div>
+<div class="container">
+    <section
+            style="background-color: #eee;">
+        <div class="container pb-4 ">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6 mb- sadow">
+                        <div class="float-end">
+                            <a class="float-nd btn btn-lg btn-secondary" th:href="@{auth/questions/ask}">
+                                <i class="far fa-plus fa-lg"></i>
+                                <span class="me-2"></span>
+                                Ask a question
+                            </a>
+                        </div>
+                        <div th:if="${not #lists.isEmpty(questions)}">
+                            <h1>All Questions</h1>
+                        </div>
+                        <div th:if="${#lists.isEmpty(questions)}">
+                            <h1>There are no questions to display.</h1>
+                        </div>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Questions</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <hr class="hr hr-blurry"/>
+
+            <div class="d-flex flex-row">
+                <div class="flex-grow-1">
+                    <div th:unless="${#lists.isEmpty(questions)}">
+                        <p class="fs-4" th:text="${totalQuestions} + (${totalQuestions} == 1 ? ' question' : ' questions')">
+                            -- questions</p>
+                    </div>
+                    <div th:if="${#lists.isEmpty(questions)}">
+                        <p class="display-6">Nothing Here <i class="fas fa-lg fa-sad-tear text-danger"></i></p>
+                    </div>
+                </div>
+                <div class="flex-shrink-1">
+                    <div class="btn-group shadow-0 mb-2 dropstart">
+                        <button
+                                type="button"
+                                class="btn btn-secondary dropdown-toggle"
+                                data-mdb-toggle="dropdown"
+                                aria-expanded="false"
+                        >
+                            <i class="fas fa-filter fa-lg"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a th:href="@{/questions/filter(tab='Newest')}" class="dropdown-item">Newest</a>
+
+                            </li>
+                            <li>
+                                <a th:href="@{/questions/filter(tab='Oldest')}" class="dropdown-item">Oldest</a>
+
+                            </li>
+                            <li>
+                                <a th:href="@{/questions/filter(tab='Answered')}" class="dropdown-item">Answered</a>
+
+                            </li>
+                            <li>
+                                <a th:href="@{/questions/filter(tab='Unanswered')}"
+                                   class="dropdown-item">Unanswered</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+            <div th:replace="~{fragments/questions :: questions(questions = ${questions}, totalPages = ${totalPages}, currentPage=${currentPage}, filter=${filter})}"></div>
+            <div th:replace="~{fragments/questions :: pagination(${totalPages}, ${currentPage}, 'questions')}"></div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

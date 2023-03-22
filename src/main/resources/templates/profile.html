@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>
+
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:if="${popup}">
+    <div th:replace="~{fragments/utils :: notifyPopUp(${popup})}"></div>
+</div>
+<div>
+</div>
+<div class="container ">
+
+    <section th:if="${user}"
+             style="background-color: #eee;">
+        <div class="container pb-4 ">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6 mb- sadow">
+                        <h1>User Profile</h1>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                            <li class="breadcrumb-item">User</li>
+                            <li class="breadcrumb-item active" aria-current="page">User Profile</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <hr class="hr hr-blurry"/>
+
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+
+                            <!--                                    src="http://localhost:8080/images/id/6f95e414-3068-4b25-bd90-7e9418eed2f4"-->
+                            <img
+                                    th:src="@{${user.getProfilePicture()}}"
+                                    class="rounded-circle img-fluid" style="width: 150px;" alt="profile">
+                            <h5 class="my-3 mb-3" th:text="${user.getUsername()}">username</h5>
+
+                            <p><i class="fas fa-birthday-cake"></i>
+                                Member since: <span
+                                        th:text="${#temporals.format(user.creationTime, 'dd MMM yyyy')}"></span></p>
+                            <div class="d-flex flex-row flex justify-content-evenly rounded-3 p-2 mb-4 shadow-inner"
+                                 style="background-color: #efefef;">
+                                <div>
+                                    <p class="small text-muted mb-1">Questions</p>
+                                    <p class="mb-0" th:text="${user.getQuestions().size()}">-</p>
+                                </div>
+                                <div class="px-3">
+                                    <p class="small text-muted mb-1">Answers</p>
+                                    <p class="mb-0" th:text="${user.getAnswers().size()}">-</p>
+                                </div>
+                                <div th:if="${followed!=null&&followed}">
+                                    <p class="small text-muted mb-1">Reputation</p>
+                                    <p class="mb-0" th:text="${user.getReputation()}">-</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer text-center">
+                            <div th:if="${followed==null}" class="d-flex flex-row justify-content-evenly">
+                                <div class="d-flex justify-content-center mb-2">
+                                    <a th:href="@{/auth/users/profile/edit}"
+                                          style="display: inline" class="btn btn-danger">
+                                            <i class="far fa-edit"></i>
+                                            Edit Profile
+                                    </a>
+                                </div>
+                            </div>
+                            <div th:if="${followed!=null}" class="d-flex flex-row justify-content-evenly">
+                                <div class="d-flex justify-content-center mb-2" th:if="${followed}">
+                                    <a th:href="@{/auth/users/__${user.username}__/unfollow}"
+                                          style="display: inline" class="btn btn-danger"><i
+                                                class="fas fa-thin fa-user-times"></i> Unfollow
+                                    </a>
+                                </div>
+                                <div class="d-flex justify-content-center mb-2" th:if="${not followed}">
+                                    <a th:href="@{/auth/users/__${user.username}__/follow}"
+                                          style="display: inline" class="btn btn-primary">
+                                            <i class="fas fa-thin fa-user-plus"></i> Follow
+                                    </a>
+                                </div>
+                                <div th:if="${followed}" class="d-flex flex-column justify-content-center mb-2">
+                                    <button id="give-reputation" type="button" class="btn btn-primary"
+                                            data-mdb-toggle="modal" data-mdb-target="#range-selector-modal"><i
+                                            class="fas fa-star-half-alt"></i> Reputation
+                                    </button>
+                                    <div class="modal fade" id="range-selector-modal" tabindex="-1"
+                                         aria-labelledby="range-selector-modal-label" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <form th:action="@{/auth/users/__${user.username}__/reputation}"
+                                                      th:method="post">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="range-selector-modal-label">Give
+                                                            Reputation</h5>
+                                                        <button type="button" class="btn-close"
+                                                                data-mdb-dismiss="modal"
+                                                                aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <label class="form-label" for="note">Select reputation
+                                                            between 0 and 10</label>
+                                                        <div class="range">
+                                                            <input type="range" class="form-range" name="note"
+                                                                   min="0" max="10" id="note" required/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-mdb-dismiss="modal">Cancel
+                                                        </button>
+                                                        <button type="submit" class="btn btn-primary"
+                                                                data-mdb-dismiss="modal">Save reputation
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4 mb-lg-0">
+                        <div class="col">
+
+                            <div class="row">
+
+                                <!-- Button trigger follower modal -->
+                                <div class="col-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                                <div class="ms-3">
+                                                    <p class="fw-bold text-dark mb-1">Followers</p>
+                                                </div>
+                                                <a data-mdb-toggle="modal"
+                                                   data-mdb-target="#followerModel"
+                                                   class="btn btn-floating btn-lg btn-light text-center align-items-center align-conent-center"
+                                                >
+                                                    <i class="fab" th:text=" ${user.getFollowers().size()}">-</i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Button trigger following modal -->
+                                <div class="col-6 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="d-flex flex-row align-items-center justify-content-between">
+                                                <div class="ms-3">
+                                                    <p class="fw-bold text-dark mb-1">Following</p>
+                                                </div>
+                                                <a data-mdb-toggle="modal"
+                                                   data-mdb-target="#followingModel"
+                                                   class="btn btn-floating btn-lg btn-light text-center align-items-center align-conent-center"
+                                                >
+                                                    <i class="fab" th:text=" ${user.getFollowed().size()}">-</i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Follower Modal -->
+                            <div class="modal fade" id="followerModel" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Followers</h5>
+                                            <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="card" th:each="follower : ${user.getFollowers()}">
+                                                <div th:replace="~{fragments/utils.html :: userCard(${follower})}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Followed Modal -->
+                            <div class="modal fade" id="followingModel" tabindex="-1"
+                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Followings</h5>
+                                            <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="card" th:each="followed : ${user.getFollowed()}">
+                                                <div th:replace="~{fragments/utils.html :: userCard(${followed})}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card mb-4 mb-md-0">
+                                        <div class="card-body">
+                                            <p class="mb-4"><i class="fas fa-tags"></i>
+                                                Tags <span th:text="${user.getTags().size()}">0</span>
+                                            </p>
+                                            <div th:each="tag : ${user.getTags()}">
+                                                <p class="mb-1" th:text="${tag.key}" style="font-size: .77rem;">tag
+                                                    name</p>
+                                                <div class="progress rounded" style="height: 5px;">
+                                                    <div class="progress-bar" role="progressbar"
+                                                         th:style="'width: ' + ${tag.value} + '%'"
+                                                         aria-valuenow="80"
+                                                         aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </div>
+                                            <!--                                            <div th:each="(tag, count) : ${user.getTags()}">-->
+                                            <!--                                                <p class="mb-1" th:text="${tag}" style="font-size: .77rem;">tag name</p>-->
+                                            <!--                                                <div class="progress rounded" style="height: 5px;">-->
+                                            <!--                                                    <div class="progress-bar" role="progressbar" th:style="'width:' + ${count} + '%'"-->
+                                            <!--                                                         aria-valuenow="${count}" aria-valuemin="0" aria-valuemax="100"></div>-->
+                                            <!--                                                </div>-->
+                                            <!--                                            </div>-->
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">First Name</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getFirstName()}">First Name</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">First Name</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getLastName()}">Last Name</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">Alias</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getUsername()}">Alias</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">Email</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getEmail()}">example@example.com</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">Bio</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getBio()}">bio</p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <p class="mb-0">Address</p>
+                                </div>
+                                <div class="col-sm-9">
+                                    <p class="text-muted mb-0" th:text="${user.getAddress().toString()}">Address</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                    </div>
+                    <!--Questions-->
+                    <div class="row">
+                        <div class="col">
+                            <div class="card mb-4 mb-md-0">
+                                <div class="card-body">
+                                    <p class="mb-4"><i class="far fa-question-circle"></i>
+                                        Questions
+                                    </p>
+
+                                    <script>
+                                        const converter = new showdown.Converter();
+                                    </script>
+                                    <div th:each="question : ${user.getQuestions()}">
+                                        <div th:replace="~{fragments/utils :: displayMarkdown(question=${question},collapse=true)}"></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>
+</body>
+</html>

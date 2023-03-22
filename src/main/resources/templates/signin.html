@@ -1,0 +1,136 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!--    <link rel="stylesheet" href="/css/form.css">-->
+    <meta charset="UTF-8">
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+    <title>Login</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+</head>
+<body>
+
+<div class="vh100 " style="height: 90%">
+
+
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div th:if="${popup}">
+        <div th:replace="~{fragments/utils.html :: notifyPopUp(${popup})}"></div>
+    </div>
+
+    <div class="container mh-100">
+        <section class="vh-100" style="background-color: #eee">
+            <div class="container pb-4">
+                <div class="row">
+                    <div class="col">
+                        <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6">
+                            <h1>Sign In</h1>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Sign in</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <hr class="hr hr-blurry"/>
+
+                <div class="h-ato">
+                    <!-- Jumbotron -->
+                    <div class=" card px-4 py-5 px-md-5 text-center text-lg-start"
+                         style="background-color: hsl(0, 0%, 96%)">
+                        <div class="container">
+                            <div class="row gx-lg-5 align-items-center">
+                                <div class="col-lg-6 mb-5 mb-lg-0">
+                                    <h1 class="my-5 display-3 fw-bold ls-tight">
+                                        Login Here <br/>
+                                        <span class="text-primary">for personalised contents</span>
+                                    </h1>
+                                    <p style="color: hsl(217, 10%, 50.8%)">
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                        Eveniet, itaque accusantium odio, soluta, corrupti aliquam
+                                        quibusdam tempora at cupiditate quis eum maiores libero
+                                        veritatis? Dicta facilis sint aliquid ipsum atque?
+                                    </p>
+                                </div>
+
+                                <div class="col-lg-6 mb-5 mb-lg-0">
+                                    <div class="card">
+                                        <div class="card-body py-5 px-md-5">
+                                            <form th:action="@{/signin}" method="post">
+                                                <div th:if="${param.error}" class="note note-danger mb-3">
+                                                    <span>Invalid username and password.</span>
+                                                </div>
+                                                <div class="form-outline mb-4">
+                                                    <input id="username" class="form-control" name="username"
+                                                           type="text"
+                                                           placeholder="username">
+                                                    <label for="username" class="form-label">Username</label>
+                                                </div>
+
+                                                <div class="form-outline mb-4">
+                                                    <input id="password" class="form-control" name="password"
+                                                           type="password"
+                                                           placeholder="password">
+                                                    <label for="password" class="form-label">Password</label>
+                                                </div>
+
+                                                <!-- Checkbox -->
+                                                <div class="form-check d-flex justify-content-center mb-4">
+                                                    <input class="form-check-input me-2" type="checkbox" value=""
+                                                           id="remember-me" checked/>
+                                                    <label class="form-check-label" for="remember-me">
+                                                        Remember me
+                                                    </label>
+                                                </div>
+                                                <div class="form-con">
+                                                    <a href="#!" class="text-body">Forgot password?</a>
+                                                </div>
+
+                                                <!-- Submit button -->
+                                                <button type="submit" class="btn btn-primary btn-block mb-4">
+                                                    Sign in
+                                                </button>
+                                                <!-- Register buttons -->
+                                                <div class="row">
+                                                    <p>Don't have an account?
+                                                        <a href="/register" class="btn-link btn-floating mx-1">
+                                                            <u>
+                                                                Register
+                                                            </u>
+                                                        </a>
+                                                    </p>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

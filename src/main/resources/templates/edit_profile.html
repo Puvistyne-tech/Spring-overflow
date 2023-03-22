@@ -1,0 +1,128 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Sign up</title>
+
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:if="${popup}">
+    <div th:replace="~{fragments/utils :: notifyPopUp(${popup})}"></div>
+</div>
+<div class="container">
+    <section style="background-color: #eee">
+        <div class="container pb-4">
+            <div class="row">
+                <div class="col">
+                    <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6 mb- sadow">
+                        <h1>Edit Profile</h1>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                            <li class="breadcrumb-item">User</li>
+                            <li class="breadcrumb-item"><a th:href="@{/auth/users/profile}">Profile</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            <hr class="hr hr-blurry"/>
+
+            <div class="row justify-content-center">
+                <div class="text-center">
+                    <form th:action="@{/auth/users/profile/edit/image}"  method="post" enctype="multipart/form-data">
+                         <div class="card mb-4 mb-xl-0">
+                             <div class="card-header">Profile Picture</div>
+                             <div class="card-body text-center">
+                                 <img  th:src="@{${authenticatedUser.getImageUrl()}}" width="200" height="200" class="rounded-circle">
+                                 <div>
+                                     <label for="file">File:</label>
+                                     <input type="file" id="file" name="file"/>
+                                 </div>
+                              </div>
+                          </div>
+                        <button class="btn btn-primary" type="submit">Save changes</button>
+
+                    </form>
+                  </div>
+                 <div class="col-xl-8">
+                    <!-- Account details card-->
+                    <div class="card mb-4">
+                        <div class="card-header">Account Details</div>
+
+
+
+                        <div class="note note-danger mb-3" th:if="${usernamecheck}">
+                            <i class="fa fa-times-circle"></i>
+                            Username already exist !
+                        </div>
+
+                        <div class="card-body">
+                            <form th:action="@{/auth/users/profile/edit}" method="post" th:object="${User}" >
+
+                                <div class="mb-3">
+                                    <label class="small mb-1" for="inputUsername">Username</label>
+                                    <input class="form-control" name="username" id="inputUsername" type="text"
+                                           placeholder="Enter your username"
+                                           th:value="${authenticatedUser.getUsername()}">
+                                </div>
+
+                                <div class="row gx-3 mb-3">
+
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputFirstName">First name</label>
+                                        <input class="form-control" name="firstName" id="inputFirstName" type="text"
+                                               placeholder="Enter your firstname"
+                                               th:value="${authenticatedUser.getFirstname()}">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="small mb-1" for="inputLastName">Last name</label>
+                                        <input class="form-control" name="lastName" id="inputLastName" type="text"
+                                               placeholder="Enter your lastname"
+                                               th:value="${authenticatedUser.getLastname()}">
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="small mb-1" for="inputEmailAddress">Email address</label>
+                                    <input class="form-control" name="email" id="inputEmailAddress" type="email"
+                                           placeholder="Enter your email address"
+                                           th:value="${authenticatedUser.getEmail()}">
+                                </div>
+                                <div class="my-3">
+                                    <a class="nav-link" href="/auth/users/profile/edit/password">reset your
+                                        password?</a>
+                                </div>
+                                <button class="btn btn-primary" type="submit">Save changes</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

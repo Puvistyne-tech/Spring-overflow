@@ -1,0 +1,173 @@
+<div th:fragment="markdown(id)">
+    <script th:inline="javascript">
+        {
+            const id = /*[[${id}]]*/ null;
+            const form = document.getElementById(id);
+            const input = form.querySelector("#body");
+            console.log(input);
+            const boldButton = form.querySelector("#bold-button");
+            const italicButton = form.querySelector("#italic-button");
+            const linkButton = form.querySelector("#link-button");
+//const imageButton = form.querySelector("#image-button");
+            const listButton = form.querySelector("#list-button");
+            const codeButton = form.querySelector("#code-button");
+            const codeBlockButton = form.querySelector("#code-block-button");
+
+            boldButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let newText;
+                if (selectedText) {
+                    newText = `<b>${selectedText}</b>`;
+                } else {
+                    newText = "<b>insert your text here</b>";
+                    input.selectionStart = start + 2;
+                    input.selectionEnd = start + 12;
+                }
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+
+            italicButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let newText;
+                if (selectedText) {
+                    newText = `<i>${selectedText}</i>`;
+                } else {
+                    newText = "<i>insert your text here</i>";
+                    input.selectionStart = start + 2;
+                    input.selectionEnd = start + 12;
+                }
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+            codeButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let newText;
+                if (selectedText) {
+                    newText = `<code class="language-markup">${selectedText}</code>`;
+                } else {
+                    newText = "<code class='language-markup'>insert your code here</code>";
+                    input.selectionStart = start + 2;
+                    input.selectionEnd = start + 12;
+                }
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+            codeBlockButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let newText;
+                if (selectedText) {
+                    newText = `<pre><code class="language-markup">${selectedText}</code></pre>`;
+                } else {
+                    newText = "<pre><code class='language-markup'>insert your code here</code></pre>";
+                    input.selectionStart = start + 2;
+                    input.selectionEnd = start + 12;
+                }
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+
+            linkButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                let newText;
+                if (selectedText) {
+                    newText = `[${selectedText}](url)`;
+                } else {
+                    newText = "[insert your text here](url)";
+                    input.selectionStart = start + 2;
+                    input.selectionEnd = start + 12;
+                }
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+
+            /*imageButton.addEventListener("click", () => {
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const selectedText = input.value.substring(start, end);
+            const newText = `![${selectedText}](image-url)`;
+            input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });*/
+            listButton.addEventListener("click", () => {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const selectedText = input.value.substring(start, end);
+                const newText = `- ${selectedText}`;
+                input.value = input.value.substring(0, start) + newText + input.value.substring(end);
+            });
+
+// const preview = document.getElementById("preview");
+//
+// const converter = new showdown.Converter();
+//
+// input.addEventListener("input", () => {
+//     preview.innerHTML = converter.makeHtml(input.value);
+// });
+
+
+            const converter = new showdown.Converter();
+
+            // const input = form.querySelector('#body');
+            const previewDiv = form.querySelector('#preview');
+            const imageInput = form.querySelector('#images');
+            console.log(input);
+            // var imageNameInput = document.getElementById('image-name');
+
+            input.addEventListener('input', function () {
+                previewDiv.innerHTML = converter.makeHtml(input.value);
+
+                const imgElements = previewDiv.getElementsByTagName('img');
+                for (let i = 0; i < imgElements.length; i++) {
+                    let imgElement = imgElements[i];
+                    let imgSrc = imgElement.getAttribute('src');
+                    let imgName = imgSrc.split('/').pop(); // extract file name from image source
+                    let imgFromLocalStorage = localStorage.getItem(imgName);
+                    if (imgFromLocalStorage !== null) {
+                        imgElement.setAttribute('src', imgFromLocalStorage);
+                    }
+                }
+            });
+
+            imageInput.addEventListener('change', function () {
+                const file = imageInput.files[0];
+                const reader = new FileReader();
+                reader.onload = (function (file) {
+                    return function (e) {
+                        var imageSrc = e.target.result;
+                        // var imageName = imageNameInput.value || file.name;
+                        // file.name = imageName;
+                        insertImageSyntax(imageSrc, file.name);
+                    };
+                })(file);
+                reader.readAsDataURL(file);
+            });
+
+            function insertImageSyntax(imageSrc, imageName) {
+                input.value += '<img src="http://localhost:8080/images/' + imageName + '" alt="' + imageName + '"/>\n';
+                const img = document.createElement('img');
+                img.src = imageSrc;
+                previewDiv.appendChild(img);
+
+                // save image to local storage
+                localStorage.setItem(imageName, imageSrc);
+
+                // // add image name to FormData object
+                // var formData = new FormData(document.getElementById('create-question-form'));
+                // formData.append('imageNames', imageName);
+                // imageInput.value = null; // reset file input
+            }
+        }
+    </script>
+
+</div>
+
+<div th:fragment="preview(id1, id2)">
+    <script th:inline="javascript">
+
+    </script>
+</div>

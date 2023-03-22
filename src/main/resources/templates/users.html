@@ -1,0 +1,157 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <!--    <link rel="stylesheet" href="/css/form.css">-->
+    <meta charset="UTF-8">
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+    <title>Users</title>
+
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+<!--    <link-->
+<!--            href="https://fonts.googleapis.com/css?family=Bm:300,400,500,700&display=swap"-->
+<!--            rel="stylesheet"-->
+<!--    />-->
+<!--    font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;-->
+
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+    <style>
+        .search-container {
+            position: relative;
+            display: inline-block;
+            border: #b6d4ef 1px solid;
+            /*border-radius: 25%;*/
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #ccc;
+        }
+
+        .search-hover {
+            border: none;
+            outline: none;
+            background-size: 22px;
+            background-position: 13px;
+            border-radius: 25px;
+            width: 50px;
+            height: 50px;
+            padding: 25px 25px 25px 25px;
+            transition: all 0.5s;
+            font-size: 16px;
+        }
+
+        .search-hover:hover {
+            width: 300px;
+            padding-left: 50px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <div th:if="${popup}">
+        <div th:replace="~{fragments/utils.html :: notifyPopUp(${popup})}"></div>
+    </div>
+
+    <div class="container mh-100">
+        <section class="vh-100" style="background-color: #eee">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6 mb- sadow">
+                            <h1>Users</h1>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Users</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+                <hr class="hr hr-blurry"/>
+                <div class="h-ato col-m2">
+                    <div class="card text-center">
+                        <div class="card-header input-group justify-content-center">
+                            <div class="search-container">
+                                <i class="fa fa-search search-icon text-primary"></i>
+                                <label>
+                                    <input id="tag-search-box" type="text" class="search-hover border-2" name=""
+                                           placeholder="search tags here..."/>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col-md-3" th:each="user : ${users}">
+                                <div class="tag-card card bg-light text-center shadow-4-strong">
+                                    <div th:fragment="userCard(user)">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center justify-content-between text-center">
+                                                <img th:src="@{${user.getImageUrl()}}"
+                                                     src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                                                     alt="" style="width: 65px; height: 65px" class="rounded-circle"/>
+                                                <div class="ms-3 flex-grow-1">
+                                                    <a th:href="@{/users/{username}(username=${user.getUsername()})}">
+                                                        <span th:text="${user.getUsername()}" style="margin-top: 0.5rem;"></span>
+                                                    </a>
+                                                    <p class="text-muted mb-0" th:text="${user.getCountry()}">france</p>
+                                                </div>
+                                                <div class="ms-3 row-cls-2">
+                                                    <a type="button" th:href="@{users/__${user.getUsername()}__}" class="btn btn-light btn-floating">
+                                                        <i class="far fa-user-circle"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                     </div>
+             </div>
+         </div>
+     </section>
+ </div>
+</div>
+
+<script>
+
+
+
+    const input = document.getElementById("tag-search-box");
+    const users = document.querySelectorAll(".tag-card");
+    input.addEventListener("input", function() {
+        const searchTerm = input.value.toLowerCase();
+        users.forEach(function(user) {
+            const username = user.querySelector("span").textContent.toLowerCase();
+            if (username.includes(searchTerm)) {
+                user.style.display = "block";
+            } else {
+                user.style.display = "none";
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<meta charset="UTF-8">
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+<title>Login</title>
+<!-- Font Awesome -->
+<link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+        rel="stylesheet"
+/>
+<!-- MDB -->
+<link
+        href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+        rel="stylesheet"
+/>
+<!-- MDB -->
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+></script>
+<header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <!-- Container wrapper -->
+        <div class="container">
+            <!-- Navbar brand -->
+            <a class="navbar-brand me-2" href="/">
+                <img
+                        src="/img/uge.ico"
+                        th:src="@{/img/uge.ico}"
+                        height="24"
+                        alt="icon"
+                        loading="eager"
+                        style="margin-top: -1px;"
+                /> UGE Overflow
+            </a>
+
+            <!-- Toggle button -->
+            <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-mdb-toggle="collapse"
+                    data-mdb-target="#navbarButtonsExample"
+                    aria-controls="navbarButtonsExample"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+            >
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Collapsible wrapper -->
+            <div class="collapse navbar-collapse" id="navbarButtonsExample">
+                <!-- Left links -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/questions">Questions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/tags">Tags</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users">Users</a>
+                    </li>
+                </ul>
+
+                <form th:action="@{/search}" method="get" class="d-flex align-items-center input-group w-auto mb-0">
+
+                    <input
+                            type="text"
+                            class="form-control rounded"
+                            placeholder="Search anything..."
+                            aria-label="Search"
+                            aria-describedby="search-addon"
+                            id="search-addon"
+                            role="button"
+                            data-mdb-toggle="dropdown"
+                            aria-expanded="false"
+                            name="q"
+                    >
+
+                    <div class="input-group-append">
+                        <button class="btn btn-light mx-2" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+
+                    <ul class="dropdown-menu" aria-labelledby="search-addon">
+                        <li>
+                            <a class="dropdown-item disabled"> [tag] search within a tag</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item disabled"> user:1234 search by author</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item disabled"> "words here" exact phrase</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li>
+                            <i class="dropdown-item btn btn-info" th:href="@{/auth/questions/ask}"> Ask a question</i>
+                        </li>
+                    </ul>
+                </form>
+
+
+                <div class="d-flex align-items-center">
+                    <!--                    If not logged in-->
+                    <div sec:authorize="isAnonymous()">
+                        <a type="button" class="btn btn-link px-3 me-2" href="/signin">
+                            Login
+                        </a>
+                        <a type="button" class="btn btn-primary me-3" href="/register">
+                            Sign up for free
+                        </a>
+                    </div>
+
+                    <!--                    If only logged in-->
+                    <ul sec:authorize="isAuthenticated()" class="navbar-nav px-2">
+                        <!-- Avatar -->
+                        <li class="nav-item dropdown">
+                            <a
+                                    class="nav-link dropdown-toggle d-flex align-items-center"
+                                    href="#"
+                                    id="navbarDropdownMenuLink"
+                                    role="button"
+                                    data-mdb-toggle="dropdown"
+                                    aria-expanded="false"
+                            >
+                                <img
+                                        th:src="@{${#authentication.principal.imageUrl}}"
+                                        src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(21).webp"
+                                        class="rounded-circle"
+                                        height="22"
+                                        alt="avatar"
+                                        loading="eager"
+                                />
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <li>
+                                    <a class="dropdown-item" href="/auth/users/profile">
+                                        <span class="me-3"></span>
+                                        <i class="fas fa-user"></i>
+                                        <span class="me-3"></span>
+                                        My profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item " href="/logout">
+                                        <span class="me-3"></span>
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span class="me-3"></span>
+                                        Sign out
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Collapsible wrapper -->
+        </div>
+        <!-- Container wrapper -->
+    </nav>
+    <!-- Navbar -->
+    <div class="position-absolute bottom-0 end-0 mb-4 mx-4">
+        <a th:href="@{/auth/questions/ask}" data-mdb-toggle="tooltip" data-mdb-placement="top"
+           title="Click here to ask a new question"
+           class="btn btn-lg btn-success btn-floating p-">
+            <i class="fas fa-plus fa-lg pb-3"></i>
+        </a>
+    </div>
+
+
+</header>
+

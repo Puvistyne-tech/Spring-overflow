@@ -1,0 +1,77 @@
+.tags{
+    margin-left: 2px;
+    color: hsl(205, 47%, 42%);
+    background-color: hsl(205, 46%, 92%);
+    border-color:#00000000;
+    font-family: "Rage Italic";
+    padding: 0.4em 0.5em;
+    line-height: 1;
+    border-width: 1px;
+    display:inline-block;
+    white-space: nowrap;
+    border-style:ridge ;
+    border-radius: 9px;
+    text-align: center;
+}
+#askButton{
+    margin-right: 50px;
+}
+.card{
+    width:40%;
+    margin-top:60px;
+    margin-left:20%
+
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top:60px;
+}
+
+.pagination ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    display: inline-block;
+    margin-right: 5px;
+}
+.pagination li.active a {
+    color: white;
+    background-color: darkorange;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+    border-width: 1px;
+    display:inline-block;
+    white-space: nowrap;
+    border-style:ridge ;
+    border-radius: 6px;
+    text-align: center;
+    width: 35px;
+    height: 20px;
+}
+.pagination li.noneactive a {
+    color: black;
+    background-color: white;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1;
+    border-width: 0.1px;
+    display:inline-block;
+    white-space: nowrap;
+    border-style:ridge ;
+    border-radius: 6px;
+    text-align: center;
+    width: 35px;
+    height: 20px;
+    border-color: lightgray;
+}
+#title-link:hover{
+    color:cornflowerblue;
+}
+.btn-group a:not(:last-child) {
+    margin-right: 10px;
+}

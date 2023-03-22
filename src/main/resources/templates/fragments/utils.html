@@ -1,0 +1,276 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="userCard(user)">
+    <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between text-center">
+            <img th:src="@{${user.getProfilePicture()}}"
+                 src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                 alt="" style="width: 45px; height: 45px" class="rounded-circle"/>
+            <div class="ms-3 flex-grow-1">
+                <p class="fw-bold mb-1" th:text="${user.getUsername()}">Username</p>
+                <p class="text-muted mb-0" th:text="${user.getEmail()}">email@gmail.com</p>
+            </div>
+            <div class="ms-3 row-cls-2">
+                <a type="button" th:href="@{/auth/users/__${user.getUsername()}__}" class="btn btn-light btn-floating">
+                    <i class="far fa-user-circle"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="userCardPopup(user,id)">
+    <div th:if="${user}">
+        <div th:id="${'user-card-'+id}" class="card p-1 d-none" style="position: fixed; top: 0; left: 0;">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between text-center">
+                    <img th:src="@{${user.getProfilePicture()}}"
+                         src="https://mdbootstrap.com/img/new/avatars/8.jpg"
+                         alt="" style="width: 45px; height: 45px" class="rounded-circle"/>
+                    <div class="ms-3 flex-grow-1">
+                        <p class="fw-bold mb-1" th:text="${user.getUsername()}">Username</p>
+                        <p class="text-muted mb-0" th:text="${user.getEmail()}">email@gmail.com</p>
+                    </div>
+                    <div class="ms-3 row-cls-2">
+                        <a type="button" th:href="@{/users/__${user.getUsername()}__}"
+                           class="btn btn-light btn-floating">
+                            <i class="far fa-user-circle fa=lg"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a th:href="@{/users/__${user.getUsername()}__}" th:text="${user.username}"
+           th:id="${'username-link-'+id}"
+           style="position: relative">hehe</a>
+    </div>
+    <script th:inline="javascript">
+        {
+            const id = /*[[${id}]]*/ null;
+            const username_link = document.getElementById('username-link-' + id);
+            const userCard = document.getElementById('user-card-' + id);
+
+            username_link.addEventListener('mouseenter', function () {
+                const buttonRect = username_link.getBoundingClientRect();
+                const cardWidth = userCard.offsetWidth;
+                const cardHeight = userCard.offsetHeight;
+                userCard.style.top = buttonRect.top - 45 + 'px';
+                userCard.style.left = buttonRect.right + 'px';
+                userCard.classList.remove('d-none');
+            });
+
+            username_link.addEventListener('mouseout', function (event) {
+                if (!event.relatedTarget || !userCard.contains(event.relatedTarget)) {
+                    userCard.classList.add('d-none');
+                }
+            });
+
+            userCard.addEventListener('mouseleave', function () {
+                userCard.classList.add('d-none');
+            });
+        }
+    </script>
+</div>
+
+<div th:fragment="printGreetings (name)" th:with="title=${title} ?: 'Mr.', greeting=${greeting} ?: 'Hello'">
+    <span th:text="${greeting}">Hello</span>
+    <span th:text="${title}">Mr.</span>
+    <span th:text="${name}">John Doe</span>
+</div>
+
+
+<div th:fragment="notifyPopUp(popup)">
+    <div th:if="${popup!=null&&!#strings.isEmpty(popup.message())}"
+         class="alert mb-0 alert-dismissible alert-absolute show top-0 end-0 mt-5"
+         th:classappend="${popup.isSuccess() ? 'alert-success' : popup.isError() ? 'alert-danger' : popup.isInfo() ? 'alert-info' : ''}"
+         role="alert" id="my-alert" data-mdb-color="secondary">
+        <i class="far fa-comment-alt me-2"></i>
+        <span th:text="${popup.message()}">
+        A sample message</span>
+        <button type="button" class="btn-close ms-2" data-mdb-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <script>
+        const myAlert = document.getElementById('my-alert')
+        window.setTimeout(function () {
+            if (myAlert) {
+                myAlert.classList.remove('show')
+                myAlert.classList.add('fade')
+            }
+        }, 5000)
+    </script>
+</div>
+
+<div th:fragment="tagHandler(tagList)">
+    <div class="form-group mb-3">
+        <!--        <label for="question-tags">Tags: </label>-->
+        <div id="tag-list">
+            <div th:each="tag : ${tagList}" class="tag"
+                 style="display: inline-block;">
+                <input type="hidden" name="tags" th:value="${tag}">
+                <button type="button" class="btn btn-secondary btn-sm border-3 rounded-pill" onclick="removeTag(this)"
+                        style="font-size: 0.50rem;">
+                    <span th:text="${tag}"></span><i class='fas fa-lg fa-times ms-2 remove-tag ms-2'></i>
+                </button>
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <label for="tag-input"></label><input type="text" class="form-control" placeholder="Add tag" id="tag-input">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="addTag()">Add
+                </button>
+            </div>
+            <br>
+        </div>
+        <hr>
+        <div id="tag-suggestions"></div>
+        <hr>
+    </div>
+    <script th:inline="javascript">
+        const tags = [[${T(uge.fr.ugeoverflow.model.Tag.TAG_TYPE).values()}]];
+
+        function addTag() {
+            const tagInput = document.getElementById("tag-input");
+            const tagList = document.getElementById("tag-list");
+            const tagValue = tagInput.value.trim();
+            if (tagValue) {
+                let tag = document.createElement("div");
+                tag.className = "tag d-inline-block mb-3";
+                tag.innerHTML =
+                    '<input type="hidden" name="tags" value="' + tagValue + '">' +
+                    '<button type="button" class="btn btn-success btn-sm border-3 rounded-pill" onClick="removeTag(this)" style="font-size: 0.50rem;">' +
+                    '<span>' + tagValue + '</span><i class="fas fa-lg fa-times ms-2 remove-tag ms-2"></i> ' +
+                    '</button>'
+                tagList.appendChild(tag);
+                tagInput.value = "";
+            }
+        }
+
+        function removeTag(tag) {
+            tag.parentElement.remove();
+        }
+
+        const tagInput = document.getElementById("tag-input");
+        const tagSuggestions = document.getElementById("tag-suggestions");
+        tagInput.addEventListener("input", function () {
+            tagSuggestions.innerHTML = "";
+
+            const value = tagInput.value.trim().toLowerCase();
+
+            const filteredTags = tags.filter(function (tag) {
+                return tag.toLowerCase().startsWith(value);
+            });
+
+            filteredTags.forEach(function (tag) {
+                const suggestion = document.createElement("div");
+                suggestion.classList.add("dropdown-item");
+                suggestion.innerText = tag;
+                suggestion.addEventListener("click", function () {
+                    tagInput.value = tag;
+                    tagSuggestions.innerHTML = "";
+                });
+                tagSuggestions.appendChild(suggestion);
+            });
+        });
+    </script>
+</div>
+
+
+//TODO : not completed
+<div th:fragment="displayMarkdown(question)" th:with="collapse=${collapse} ?: false">
+
+
+    <div th:if="${collapse&&question!=null}" class="card mb-2">
+        <div class="card-header d-flex flex-row align-items-center justify-content-between">
+            <a th:href="@{/questions/{id}(id=${question.getId()})}">
+                <h5 class="card-title mt-2" th:text="${question.getTitle()}">Title</h5>
+            </a>
+            <button th:if="${collapse&&#strings.length(question.getBody()) &gt; 200}"
+                    th:href="${'#questionBody-'+question.id}"
+                    class="btn btn-sm btn-secondary float-end"
+                    type="button"
+                    data-mdb-toggle="collapse"
+                    aria-expanded="false"
+                    aria-controls="questionBodyExample">
+                expand
+                <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+        <div class="card-body">
+
+            <div th:if="collapse" class="card-text">
+                <div th:id="${'question-card-body-'+question.id}">
+                </div>
+
+            </div>
+            <div th:if="!collapse" class="card-text">
+                <div class="my-markdown-display markdown-body" th:utext="${question.getBody()}">
+                    body without collapse
+                </div>
+            </div>
+            <p class="card-text small text-muted mb-2"
+               th:text="${question.getCreationTime()}">time</p>
+        </div>
+    </div>
+    <div th:if="${!collapse&&question!=null}" class="card mb-2">
+        <div class="card-header d-flex flex-row align-items-center justify-content-between">
+            <a th:href="@{/questions/{id}(id=${question.getId()})}">
+                <h5 class="card-title mt-2" th:text="${question.getTitle()}">Title</h5>
+            </a>
+        </div>
+        <div class="card-body">
+
+            <div class="card-text">
+                <div th:id="${'question-card-body-'+question.id}">
+                </div>
+
+            </div>
+            <p class="card-text small text-muted mb-2"
+               th:text="${question.getCreationTime()}">time</p>
+        </div>
+
+        <!--    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>-->
+        <!--    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>-->
+
+
+        <script th:inline="javascript">
+            {
+                const questionCardBodyId = 'question-card-body-' +/*[[${question.getId()}]]*/ null
+                const questionBody = document.getElementById(questionCardBodyId);
+                const markdownContent = /*[[${question.getBody()}]]*/ null
+                const id = 'questionBody-' +/*[[${question.getId()}]]*/ null
+
+                const collapse = /*[[${collapse}]]*/ null
+
+                if (collapse == true) {
+                    if (markdownContent && markdownContent.length <= 200) {
+                        questionBody.innerHTML = '<div class="my-markdown-display">' + converter.makeHtml(markdownContent) + '</div>'
+                    } else if (markdownContent && markdownContent.length > 200) {
+                        questionBody.innerHTML = '<div class="my-markdown-display">' + converter.makeHtml(markdownContent.substring(0, 200)) + '</div>'
+                        questionBody.innerHTML += '<div class="my-markdown-display collapse mt-2 container " id=' + id + '>' + converter.makeHtml(markdownContent.substring(201, markdownContent.length)) + '</div>'
+                    }
+                } else {
+                    questionBody.innerHTML = '<div class="my-markdown-display">' + converter.makeHtml(markdownContent) + '</div>'
+                }
+                console.log(questionBody)
+                const myMarkdownDisplay = document.querySelector('.my-markdown-display');
+                if (myMarkdownDisplay) {
+                    let imgs = document.getElementById(id).querySelectorAll('img');
+                    imgs.forEach(function (img) {
+                        if (img) {
+                            img.classList.add('img-fluid');
+                            img.classList.add('d-block');
+                            img.classList.add('hover-shadow');
+                        }
+                    });
+                }
+            }
+
+        </script>
+    </div>
+
+    <!--<div th:fragment="displayMarkdownInput(markdown)">-->
+    <!--    <div class="markdown-body" th:utext="${markdown}"></div>-->
+    <!--    <div class="form-group">-->
+    <!--        <label for="markdown">Markdown</label>-->
+    <!--        <textarea class="form-control" id="markdown" name="markdown" rows="10" th:value="${markdown}"></textarea>-->
+    <!--    </div>-->
+    <!--</div>-->

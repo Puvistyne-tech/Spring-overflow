@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+
+    <link rel="stylesheet" th:href="@{/css/prism.css}"/>
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>
+    <!--    <script type="text/javascript" defer th:src="@{/js/markdown.js}"></script>-->
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+    <!-- link from static  file css one-question.css -->
+    <link rel="stylesheet" href="/css/one-question.css">
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"-->
+    <!--          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+    <title th:text="${question.title}"></title>
+
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:if="${popup}">
+    <div th:replace="~{fragments/utils.html :: notifyPopUp(${popup})}"></div>
+</div>
+<div class="container" style="margin-top: 20px;width: 70%">
+    <div class="row">
+        <div class="col">
+            <nav aria-label="breadcrumb" class="bg-light rounded- p-5 pt-6 mb- sadow">
+                <h1>Question</h1>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item text-black"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Question</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <div class="card bs" style="background-color: #f8f9fa;border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 2px 2px 5px #ccc;
+    padding: 10px;">
+        <!--        Make text in bold-->
+        <div class="card-header">
+            <h2 th:text="${question.title}">This is a title</h2>
+            <br>
+            <h5>Tags:
+                <span th:each="tag : ${question.tags}"
+                      class="badge badge-pill badge-primary mr-1" style="margin-right: 5px;"
+                      th:text="${tag}">JAVA</span>
+                <span>&nbsp;</span>
+            </h5>
+            <cite>
+                <small>Asked
+                    <span th:with="duration=${T(java.time.Duration).between(question.creationTime, T(java.time.LocalDateTime).now())}">
+                                    <span th:if="${duration.toMinutes() < 1}"> just now</span>
+                                    <span th:if="${duration.toMinutes() >= 1 and duration.toHours() < 1}">  [[${duration.toMinutes()}]] min ago</span>
+                                    <span th:if="${duration.toHours() >= 1 and duration.toDays() < 1}">  [[${duration.toHours()}]] hour ago</span>
+                                    <span th:if="${duration.toDays() >= 1}">  [[${duration.toDays()}]] day ago</span>
+                                    <span th:if="${duration.toDays() > 1}"> <span
+                                            th:text="${#temporals.format(question.creationTime, 'dd-MM-yyyy')} + ' at ' + ${#temporals.format(question.creationTime, 'HH:mm')}"></span></span>
+                    </span>
+                    by
+                    <!--                    <a-->
+                    <!--                            th:href="@{/users/__${question.user.getUsername()}__}"-->
+                    <!--                            th:text="${question.user.getUsername()}">USERNAME</a>-->
+                    <a th:replace="~{fragments/utils.html :: userCardPopup(${question.user},${question.creationTime.hashCode()})}">popup</a>
+
+                </small>
+            </cite>
+        </div>
+        <div class="card-body" style="margin-top: -30px">
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <div class="d-flex flex-row justify-content-start rounded-3 p-4 shadow-inner"
+                         style="background-color: #efefef;">
+                        <h5>
+                            <blockquote class="blockquote mb-0" th:utext="${question.getBody()}">To show the
+                            </blockquote>
+                        </h5>
+                        <div sec:authorize="isAuthenticated()" class="d-flex ms-auto">
+                            <div th:if="${question.user.id == #authentication.principal.id}">
+                                <button type="button" class="btn btn-primary btn-sm btn-floating mt-auto"
+                                        data-mdb-toggle="modal" th:href="${'#editQuestion'}"
+                                >
+                                    <i class="fas fa-magic"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!--                <div sec:authorize="isAuthenticated()">-->
+                <!--                    <div th:if="${question.user.id == #authentication.principal.id}">-->
+
+                <!--                        <a data-mdb-toggle="modal"-->
+                <!--                           -->
+                <!--                           class="d-flex justify-content-end bottom-0 inline-block"-->
+                <!--                        >-->
+                <!--                            <button type="button" class="btn btn-secondary bg-transparent" data-toggle="modal"-->
+                <!--                                    data-target="#editQuestionModal" style="text-transform: lowercase;">Edit-->
+                <!--                            </button>-->
+                <!--                        </a>-->
+                <!--                        <a data-mdb-toggle="modal"-->
+                <!--                           data-mdb-target="#deleteQuestionModal"-->
+                <!--                           class="d-flex justify-content-end bottom-0"-->
+                <!--                        >-->
+                <!--                            <button type="button" class="btn btn-outline-danger" data-mdb-ripple-color="dark"-->
+                <!--                                    data-toggle="modal"-->
+                <!--                                    data-target="#deleteQuestionModal">delete-->
+                <!--                            </button>-->
+
+                <!--                        </a>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+        </div>
+        <!--        Edit Modal  for question -->
+        <div class="modal fade" th:id="${'editQuestion'}" tabindex="-1" role="dialog"
+             aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editQuestionModalLabel">Edit Question</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form th:action="@{/questions/__${question.getId()}__}"
+                              th:object="${question}" th:method="PUT"
+                              id="editQuestionForm" enctype="multipart/form-data"
+                              novalidate>
+                            <input type="hidden" th:field="*{id}">
+                            <div class="form-group">
+                                <label for="question-title">Title</label>
+                                <input type="text" class="form-control" id="question-title" name="title"
+                                       th:value="${question.getTitle()}">
+                            </div>
+                            <div th:replace="~{fragments/utils.html :: tagHandler(${question.getTags()})}">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="answer-body">Body</label>
+                                <div class="card-body">
+                                    <label for="body"></label>
+                                    <textarea class="form-control" id="body" rows="4" name="body"
+                                              th:text="${question.getBody()}"
+                                              th:field="*{body}"
+                                              style="background: #fff;border:1px black solid"></textarea>
+                                    <div class="invalid-feedback">The description must have at least 1
+                                        characters
+                                    </div>
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <br/>
+                                    <button class="btn btn-secondary" type="button" id="bold-button"><i
+                                            class="fa fa-bold"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="italic-button"><i
+                                            class="fa fa-italic"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="link-button"><i
+                                            class="fa fa-link"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="code-button"><i
+                                            class="fa fa-code"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="code-block-button"><i
+                                            class="fa fa-code"></i>block
+                                    </button>
+
+                                    <label for="images" class="btn btn-secondary"><i class="fa fa-image"></i>
+                                    </label>
+                                    <input type="file" id="images" name="images" hidden="hidden">
+
+                                    <button class="btn btn-primary" type="button" id="list-button"><i
+                                            class="fa fa-list"></i>
+                                    </button>
+                                    <br/>
+                                    <div id="preview" class="mt-2 p-2 card shadow-4-strong"></div>
+                                </div>
+                                <div th:replace="~{fragments/markdown :: markdown('editQuestionForm')}">
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="button" class="btn btn-outline-danger"
+                                        data-mdb-ripple-color="dark" data-mdb-toggle="modal"
+                                        th:href="${'#deleteQuestion'}">Delete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        Delete Modal  question -->
+        <div class="modal fade" th:id="${'deleteQuestion'}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteQuestionModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteQuestionModalLabel">Delete Question</h5>
+                        <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this question ?
+                    </div>
+                    <form th:action="@{/questions/__${question.getId()}__}" th:method="DELETE">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-header">
+            <div th:each="comment : ${question.comments}">
+                <div class="comment-text" style="margin-left: 20%; -moz-text-size-adjust: auto">
+                    <span class="comment-copy" th:text="${comment.body} + ' – '">a comment </span>
+                    <cite><small>
+                        <div class="d-inline-flex ai-center"
+                             style="display: inline-block;padding: 3px 6px;background-color: lightblue;color: white;border-radius: 5px;">
+                            <!--                            <a th:href="@{/users/__${comment.user.getUsername()}__}" th:text="${comment.user.username}">user</a>-->
+                            <a th:replace="~{fragments/utils.html :: userCardPopup(${comment.user},${comment.creationTime.hashCode()})}">popup</a>
+                        </div>
+                        <span style="color: gray"
+                              th:text="${#temporals.format(comment.creationTime, 'MMM d, yyyy')} + ' at ' + ${#temporals.format(comment.creationTime, 'HH:mm')}"> date</span>
+                    </small></cite>
+                    <div sec:authorize="isAuthenticated()">
+                        <div th:if="${comment.user.id == #authentication.principal.id}">
+                            <a data-mdb-toggle="modal"
+                               th:href="${'#editCommentWithId-'+comment.getId()}"
+                               class="d-flex justify-content-end bottom-0 smaller-text">
+                                edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edit modal for Comment -->
+                <div class="modal fade" th:id="${'editCommentWithId-'+comment.getId()}" tabindex="-1" role="dialog"
+                     aria-labelledby="editCommentModal" aria-hidden="true">f
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editCommentModal">Edit Comment</h5>
+                                <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/auth/questions/__${question.getId()}__/comments/__${comment.getId()}__}"
+                                      th:object="${comment}" th:method="PUT">
+                                    <!-- <input type="hidden" th:field="*{id}">-->
+                                    <div class="form-group">
+                                        <label for="answer-body">Body</label>
+                                        <textarea class="form-control" id="answer-body" name="body" rows="3"
+                                                  th:text="${comment.getBody()}"></textarea>
+                                    </div>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-mdb-ripple-color="dark" data-mdb-toggle="modal"
+                                                th:href="${'#deleteCommentWithId-'+comment.getId()}">Delete
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Delete Modal for Comment -->
+                <div class="modal fade" th:id="${'deleteCommentWithId-'+comment.getId()}" tabindex="-1" role="dialog"
+                     aria-labelledby="deleteCommentModal" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteCommentModal">Delete Answer</h5>
+                                <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this comment?
+                            </div>
+                            <form th:action="@{/auth/questions/__${question.getId()}__/comments/__${comment.getId()}__}"
+                                  th:method="DELETE">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-mdb-dismiss="modal">Close
+                                    </button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div sec:authorize="isAuthenticated()" style="margin-left: 14%;">
+            <div class="d-flex flex-start w-100">
+                <img class="rounded-circle shadow-1-strong me-3"
+                     th:src="@{${question.getUser().getProfilePicture()}}" alt="avatar"
+                     width="40"
+                     height="40"/>
+                <div class="form-outline w-100" style="margin-left: 10px;">
+                    <form th:action="@{/auth/questions/__${question.getId()}__/comment}"
+                          th:method="POST">
+                        <input type="text" class="form-control form-control-sm" style="border:1px black solid"
+                               name="body"/>
+                        <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 5px">
+                            Post comment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="background-color: #f8f9fa;    border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px #ccc;
+        padding: 10px;">
+        <div class="card-header">
+            <!-- same row show two text  -->
+            <div class="row">
+                <div class="col-8">
+                    <h4 th:text="${question.answers.size()} + ' ' + (${question.answers.size()} == 1 ? 'Answer' : 'Answers')">
+                        22 Answers</h4>
+                </div>
+<!--                <div class="col-4">-->
+<!--                    <div class="btn-group">-->
+<!--                        <span>Sorted by :</span>-->
+<!--                        <div class="btn-group">-->
+<!--                            <button class="btn btn-primary btn-sm dropdown-toggle border-0 bg-transparent text-dark"-->
+<!--                                    type="button"-->
+<!--                                    data-mdb-toggle="dropdown" aria-expanded="true">-->
+<!--                                Highest score (default)-->
+<!--                                <ul class="dropdown-menu">-->
+<!--                                    <li class="dropdown-item">TODO</li>-->
+<!--                                    <li class="dropdown-item">TODO</li>-->
+<!--                                </ul>-->
+<!--                            </button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+            <hr>
+
+            <div class="card-body" th:each="answer : ${question.answers}">
+                <div class="row justify-content-start">
+                    <div class="col-1">
+                        <div class="d-flex flex-column align-items-center">
+
+
+                            <a th:href="@{/auth/questions/__${question.getId()}__/answers/__${answer.getId()}__/vote/up}">
+                                <button type="button" class="btn btn-light btn-rounded p-0 border-0">
+                                    <!--                                    <svg aria-hidden="true" width="36" height="36" viewBox="0 0 36 36"-->
+                                    <!--                                         style="fill: darkgray;">-->
+                                    <!--                                        <path d="M2 25h32L18 9 2 25Z"></path>-->
+                                    <!--                                    </svg>-->
+                                    <svg sec:authorize="isAnonymous()"
+                                         aria-hidden="true" width="36" height="36" viewBox="0 0 36 36"
+                                         style="fill: darkgray">
+                                        <path d="M2 25h32L18 9 2 25Z"></path>
+                                    </svg>
+                                    <svg sec:authorize="isAuthenticated()" aria-hidden="true" width="36"
+                                         height="36" viewBox="0 0 36 36"
+                                         th:style="'fill: ' + (${answer.isUpVotedByUser() == true ? '#9bcaf5' : 'darkgray'}) + ';'">
+                                        <path d="M2 25h32L18 9 2 25Z"></path>
+                                    </svg>
+                                </button>
+                            </a>
+                            <span th:text="${answer.getScore()}"
+                                  style="color: darkgray; font-size: 24px;">34574</span>
+                            <a th:href="@{/auth/questions/__${question.getId()}__/answers/__${answer.getId()}__/vote/down}">
+                                <button type="button" class="btn btn-light btn-rounded p-0 border-0">
+                                    <svg sec:authorize="isAnonymous()"
+                                         aria-hidden="true" width="36" height="36" viewBox="0 0 36 36"
+                                         style="fill: darkgray">
+                                        <path d="M2 11h32L18 27 2 11Z"></path>
+                                    </svg>
+                                    <svg sec:authorize="isAuthenticated()"
+                                         aria-hidden="true" width="36" height="36" viewBox="0 0 36 36"
+                                         th:style="'fill: ' + (${answer.isDownVotedByUser() == true ? '#9bcaf5' : 'darkgray'}) + ';'">
+                                        <path d="M2 11h32L18 27 2 11Z"></path>
+                                    </svg>
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-11">
+                        <cite>
+                            <small>Asked
+                                <span th:with="duration=${T(java.time.Duration).between(question.creationTime, T(java.time.LocalDateTime).now())}">
+                                    <span th:if="${duration.toMinutes() < 1}"> just now</span>
+                                    <span th:if="${duration.toMinutes() >= 1 and duration.toHours() < 1}">  [[${duration.toMinutes()}]] min ago</span>
+                                    <span th:if="${duration.toHours() >= 1 and duration.toDays() < 1}">  [[${duration.toHours()}]] hour ago</span>
+                                    <span th:if="${duration.toDays() >= 1}">  [[${duration.toDays()}]] day ago</span>
+                                    <span th:if="${duration.toDays() > 1}"> <span
+                                            th:text="${#temporals.format(question.creationTime, 'dd-MM-yyyy')} + ' at ' + ${#temporals.format(question.creationTime, 'HH:mm')}"></span></span>
+                    </span>
+                                by
+                                <!--                                <a-->
+                                <!--                                        th:href="@{/users/__${answer.user.getUsername()}__}"-->
+                                <!--                                        th:text="${answer.user.getUsername()}">USERNAME</a>-->
+                                <a th:replace="~{fragments/utils.html :: userCardPopup(${answer.user},${answer.creationTime.hashCode()})}">popup</a>
+                            </small>
+                        </cite>
+                        <hr>
+                        <div class="d-flex flex-row justify-content-start rounded-3 p-4 shadow-inner"
+                             style="background-color: #efefef;">
+                            <h5>
+                                <blockquote class="blockquote mb-0" th:utext="${answer.getBody()}">While you can
+                                    technically start building your website without choosing a specific niche, it's
+                                    generally not recommended. Here's why:
+                                    Lack of focus: Without a specific niche, your website may lack focus and direction.
+                                    This can make it difficult to attract and retain customers.
+                                    Inconsistent branding: Your branding should reflect the products you're selling and
+                                    the niche you're in. Without a specific niche, it can be challenging to create a
+                                    consistent brand that resonates with your target audience.
+                                    Difficulty with marketing: Marketing your website is much easier when you have a
+                                    specific niche. You can target your advertising and SEO efforts towards a specific
+                                    audience, which can be more effective than a broad approach.
+                                </blockquote>
+                            </h5>
+                            <div sec:authorize="isAuthenticated()" class="d-flex ms-auto">
+                                <div th:if="${answer.user.id == #authentication.principal.id}">
+                                    <button type="button" class="btn btn-primary btn-sm btn-floating mt-auto"
+                                            data-mdb-toggle="modal"
+                                            th:href="${'#editAnswerWithId-'+answer.getId()}">
+                                        <i class="fas fa-magic"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Edit modal for answer -->
+                <div class="modal fade" th:id="${'editAnswerWithId-'+answer.getId()}" tabindex="-1" role="dialog"
+                     aria-labelledby="editAnswerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editAnswerModalLabel">Edit Answer</h5>
+                                <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/auth/questions/__${question.getId()}__/answers/__${answer.getId()}__}"
+                                      id="editAnswerForm"
+                                      th:object="${newAnswer}" th:method="PUT"
+                                      enctype="multipart/form-data"
+                                      novalidate>
+                                    <!-- <input type="hidden" th:field="*{id}">-->
+                                    <div class="form-group">
+                                        <label for="answer-body">Body</label>
+                                        <div class="card-body">
+                                            <label for="body"></label>
+                                            <textarea class="form-control" id="body" rows="4" name="body"
+                                                      th:text="${answer.getBody()}"
+                                                      style="background: #fff;border:1px black solid"></textarea>
+                                            <div class="invalid-feedback">The description must have at least 1
+                                                characters
+                                            </div>
+                                            <div class="valid-feedback">Looks good!</div>
+                                            <br/>
+                                            <button class="btn btn-secondary" type="button" id="bold-button"><i
+                                                    class="fa fa-bold"></i>
+                                            </button>
+                                            <button class="btn btn-secondary" type="button" id="italic-button"><i
+                                                    class="fa fa-italic"></i>
+                                            </button>
+                                            <button class="btn btn-secondary" type="button" id="link-button"><i
+                                                    class="fa fa-link"></i>
+                                            </button>
+                                            <button class="btn btn-secondary" type="button" id="code-button"><i
+                                                    class="fa fa-code"></i>
+                                            </button>
+                                            <button class="btn btn-secondary" type="button" id="code-block-button"><i
+                                                    class="fa fa-code"></i>block
+                                            </button>
+
+                                            <label for="images" class="btn btn-secondary"><i class="fa fa-image"></i>
+                                            </label>
+                                            <input type="file" id="images" name="images" hidden="hidden">
+
+                                            <button class="btn btn-primary" type="button" id="list-button"><i
+                                                    class="fa fa-list"></i>
+                                            </button>
+                                            <br/>
+                                            <div id="preview" class="mt-2 p-2 card shadow-4-strong"></div>
+                                        </div>
+                                    </div>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <button type="button" class="btn btn-outline-danger"
+                                                data-mdb-ripple-color="dark" data-mdb-toggle="modal"
+                                                th:href="${'#deleteAnswerWithId-'+answer.getId()}">Delete
+                                        </button>
+                                    </div>
+                                </form>
+                                <div th:replace="~{fragments/markdown :: markdown('editAnswerForm')}">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Delete Modal for Answer -->
+                    </div>
+                </div>
+                <!-- Comments for answer -->
+                <div class="card-header">
+                    <div th:each="comment : ${answer.comments}">
+                        <div class="comment-text" style="margin-left: 20%; -moz-text-size-adjust: auto">
+                            <span class="comment-copy" th:text="${comment.body} + ' – '">a comment </span>
+                            <cite><small>
+                                <div class="d-inline-flex ai-center"
+                                     style="display: inline-block;padding: 3px 6px;background-color: lightblue;color: white;border-radius: 5px;">
+                                    <!--                                    <a th:href="@{/users/__${comment.user.getUsername()}__}"-->
+                                    <!--                                       th:text="${comment.user.username}">user</a>-->
+                                    <div th:replace="~{fragments/utils.html :: userCardPopup(${comment.user},${comment.creationTime.hashCode()})}">
+                                        popup
+                                    </div>
+                                </div>
+                                <span style="color: gray"
+                                      th:text="${#temporals.format(comment.creationTime, 'MMM d, yyyy')} + ' at ' + ${#temporals.format(comment.creationTime, 'HH:mm')}"> date</span>
+
+                            </small></cite>
+                            <div sec:authorize="isAuthenticated()">
+                                <div th:if="${comment.user.id == #authentication.principal.id}">
+                                    <a data-mdb-toggle="modal"
+                                       th:href="${'#editCommentWithId-'+comment.getId()}"
+                                       class="d-flex justify-content-end bottom-0 smaller-text">
+                                        edit
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Edit modal for Comment -->
+                        <div class="modal fade" th:id="${'editCommentWithId-'+comment.getId()}" tabindex="-1"
+                             role="dialog"
+                             aria-labelledby="editCommentModal" aria-hidden="true">f
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="editCommentModal">Edit Comment</h5>
+                                        <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form th:action="@{/auth/questions/__${question.getId()}__/comments/__${comment.getId()}__}"
+                                              th:object="${comment}" th:method="PUT">
+                                            <!-- <input type="hidden" th:field="*{id}">-->
+                                            <div class="form-group">
+                                                <label for="answer-body">Body</label>
+                                                <textarea class="form-control" id="answer-body" name="body"
+                                                          rows="3"
+                                                          th:text="${comment.getBody()}"></textarea>
+                                            </div>
+                                            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                <button type="button" class="btn btn-outline-danger"
+                                                        data-mdb-ripple-color="dark" data-mdb-toggle="modal"
+                                                        th:href="${'#deleteCommentWithId-'+comment.getId()}">
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Modal for Comment -->
+                        <div class="modal fade" th:id="${'deleteCommentWithId-'+comment.getId()}" tabindex="-1"
+                             role="dialog"
+                             aria-labelledby="deleteCommentModal" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteCommentModal">Delete Answer</h5>
+                                        <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this comment?
+                                    </div>
+                                    <form th:action="@{/auth/questions/__${question.getId()}__/comments/__${comment.getId()}__}"
+                                          th:object="${comment}" th:method="DELETE">
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-mdb-dismiss="modal">Close
+                                            </button>
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div sec:authorize="isAuthenticated()" style="margin-left: 13% ">
+                    <div class="d-flex flex-start w-100">
+                        <img class="rounded-circle shadow-1-strong me-3"
+                            th:src="@{${answer.getUser().getProfilePicture()}}" alt="avatar"
+                             width="40"
+                             height="40"/>
+                        <div class="form-outline w-100" style="margin-left: 10px;">
+                            <form th:action="@{/auth/questions/__${question.getId()}__/answers/__${answer.getId()}__/comment}"
+                                  th:method="POST">
+                                <input type="text" class="form-control form-control-sm" name="body"
+                                       style="border:1px black solid"/>
+                                <button type="submit" class="btn btn-primary btn-sm"
+                                        style="margin-top: 5px">
+                                    Post comment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" th:id="${'deleteAnswerWithId-'+answer.getId()}" tabindex="-1"
+                     role="dialog"
+                     aria-labelledby="deleteAnswerModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteAnswerModalLabel">Delete Answer</h5>
+                                <button type="button" class="btn-close" data-mdb-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete this answer?
+                            </div>
+                            <form th:action="@{/auth/questions/__${question.getId()}__/answers/__${answer.getId()}__}"
+                                  th:object="${answer}" th:method="DELETE">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-mdb-dismiss="modal">Close
+                                    </button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+
+
+    <!--Your Answer-->
+    <div class="card" style="background-color: #f8f9fa;    border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px #ccc;
+        padding: 10px;">
+        <div class="card-header">
+            <!-- same row show two text  -->
+            <div class="col">
+                <div>
+                    <h4> Your Answer</h4>
+                </div>
+                <hr>
+                <div class="card-footer py-3 border-0" style="background-color: #f8f9fa; ">
+                    <div class="d-flex flex-start w-100">
+                        <img sec:authorize="isAuthenticated()" class="rounded-circle shadow-1-strong me-3"
+                             th:src="@{${question.getUser().getProfilePicture()}}" alt="avatar"
+                             width="40"
+                             height="40"/>
+                        <div class="form-outline w-100" style="margin-left: 10px;">
+                            <form th:action="@{/questions/__${question.getId()}__/answers}"
+                                  id="answerForm"
+                                  th:method="POST" th:object="${newAnswer}" class="to-validate"
+                                  enctype="multipart/form-data"
+                                  novalidate>
+                                <div class="card-body">
+                                    <label for="body"></label>
+                                    <textarea class="form-control" id="body" rows="4" name="body"
+                                              th:field="*{body}"
+                                              style="background: #fff;border:1px black solid"></textarea>
+                                    <div class="invalid-feedback">The description must have at least 20
+                                        characters
+                                    </div>
+                                    <div class="valid-feedback">Looks good!</div>
+                                    <br/>
+                                    <button class="btn btn-secondary" type="button" id="bold-button"><i
+                                            class="fa fa-bold"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="italic-button"><i
+                                            class="fa fa-italic"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="link-button"><i
+                                            class="fa fa-link"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="code-button"><i
+                                            class="fa fa-code"></i>
+                                    </button>
+                                    <button class="btn btn-secondary" type="button" id="code-block-button"><i
+                                            class="fa fa-code"></i>block
+                                    </button>
+
+                                    <label for="images" class="btn btn-secondary"><i class="fa fa-image"></i>
+                                    </label>
+                                    <input type="file" id="images" name="images" hidden="hidden">
+
+                                    <button class="btn btn-primary" type="button" id="list-button"><i
+                                            class="fa fa-list"></i>
+                                    </button>
+                                    <br/>
+                                    <div id="preview" class="mt-2 p-2 card shadow-4-strong"></div>
+                                </div>
+                                <div sec:authorize="isAuthenticated()">
+                                    <button type="submit" class="btn btn-primary btn-sm"
+                                            style="margin-top: 5px">
+                                        Post Your Answer
+                                    </button>
+                                </div>
+                                <div th:replace="~{fragments/markdown :: markdown('answerForm')}"></div>
+                            </form>
+                            <div sec:authorize="isAnonymous()">
+                                <p>
+                                    <a th:href="@{/auth/questions/__${question.getId()}__}">Register</a> or
+                                    <a th:href="@{/auth/questions/__${question.getId()}__}">Sign In</a> to post your
+                                    answer.
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--<script>-->
+<!--    const converter = new showdown.Converter();-->
+
+<!--    const bodyTextarea = document.getElementById('body');-->
+<!--    const previewDiv = document.getElementById('preview');-->
+<!--    const imageInput = document.getElementById('images');-->
+<!--    // var imageNameInput = document.getElementById('image-name');-->
+
+<!--    bodyTextarea.addEventListener('input', function () {-->
+<!--        previewDiv.innerHTML = converter.makeHtml(bodyTextarea.value);-->
+
+<!--        const imgElements = previewDiv.getElementsByTagName('img');-->
+<!--        for (let i = 0; i < imgElements.length; i++) {-->
+<!--            let imgElement = imgElements[i];-->
+<!--            let imgSrc = imgElement.getAttribute('src');-->
+<!--            let imgName = imgSrc.split('/').pop(); // extract file name from image source-->
+<!--            let imgFromLocalStorage = localStorage.getItem(imgName);-->
+<!--            if (imgFromLocalStorage !== null) {-->
+<!--                imgElement.setAttribute('src', imgFromLocalStorage);-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+
+<!--    imageInput.addEventListener('change', function () {-->
+<!--        const file = imageInput.files[0];-->
+<!--        const reader = new FileReader();-->
+<!--        reader.onload = (function (file) {-->
+<!--            return function (e) {-->
+<!--                var imageSrc = e.target.result;-->
+<!--                // var imageName = imageNameInput.value || file.name;-->
+<!--                // file.name = imageName;-->
+<!--                insertImageSyntax(imageSrc, file.name);-->
+<!--            };-->
+<!--        })(file);-->
+<!--        reader.readAsDataURL(file);-->
+<!--    });-->
+
+<!--    function insertImageSyntax(imageSrc, imageName) {-->
+<!--        bodyTextarea.value += '<img src="http://localhost:8080/images/' + imageName + '" alt="' + imageName + '"/>\n';-->
+<!--        const img = document.createElement('img');-->
+<!--        img.src = imageSrc;-->
+<!--        previewDiv.appendChild(img);-->
+
+<!--        // save image to local storage-->
+<!--        localStorage.setItem(imageName, imageSrc);-->
+
+<!--        // // add image name to FormData object-->
+<!--        // var formData = new FormData(document.getElementById('create-question-form'));-->
+<!--        // formData.append('imageNames', imageName);-->
+<!--        // imageInput.value = null; // reset file input-->
+<!--    }-->
+
+<!--</script>-->
+<script type="text/javascript" defer th:src="@{/js/prism.js}"></script>
+</body>
+</html>

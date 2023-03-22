@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Confirm Exit</title>
+    <script type="text/javascript">
+        window.onbeforeunload = function () {
+            return "Are you sure you want to leave this page?";
+        }
+    </script>
+</head>
+<body>
+<h1>Are you sure you want to leave this page?</h1>
+<a href="#" th:href="@{/confirm}">Yes</a>
+<a href="#" onclick="window.history.back(); return false;">No</a>
+</body>
+</html>

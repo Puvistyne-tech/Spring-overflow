@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.0/dist/showdown.min.js"></script>
+    <link rel="stylesheet" th:href="@{/css/prism.css}"/>
+
+    <!--    <link rel="stylesheet" th:href="@{/css/ask-question.css}"/>-->
+
+    <!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"-->
+    <!--          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+    <title>Ask a new question </title>
+    <script type="text/javascript" defer th:src="@{/js/create-question-form-validation.js}"></script>
+    <script type="text/javascript" defer th:src="@{/js/inputs-information-display.js}"></script>
+    <script type="text/javascript" defer th:src="@{/js/markdown.js}"></script>
+
+
+    <title>Profile</title>
+    <!-- Font Awesome -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+            rel="stylesheet"
+    />
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+            rel="stylesheet"
+    />
+    <!-- MDB -->
+    <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+    ></script>
+
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<div th:if="${popup}">
+    <div th:replace="~{fragments/utils :: notifyPopUp(${popup})}"></div>
+</div>
+<div class="container">
+
+    <!--          action="/questions/upload/up"-->
+    <form id="create-question-form"
+          th:action="@{/questions/ask}"
+          method="post" th:object="${question}" class="to-validate" enctype="multipart/form-data"
+          novalidate>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="text-center">Ask Question</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-7 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Title</h4>
+                        <small>Make your inquiry clear and concise, as if addressing another person.</small>
+                    </div>
+                    <div class="card-body">
+                        <input type="text" id="title" pattern="^[a-zA-Z].*$" th:field="*{title}" class="form-control"
+                               placeholder="eg. (java linux .NET spring" minlength="10" maxlength="100" required>
+                        <div class="invalid-feedback">The title is required and must start with a letter</div>
+                        <div class="valid-feedback">Looks good!</div>
+
+                        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="alert alert-warning"
+                             role="alert">
+                        </div>
+
+                        <div th:if="${titlexists}">
+                            <p class="alert alert-warning" role="alert" th:text="${titlexists}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="col-md-2 mx-auto" id="info-card">
+                &lt;!&ndash; Information  &ndash;&gt;
+                <h2>entered</h2>
+            </div>-->
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-7 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Can you provide more information on the issue at hand?</h4>
+                        <small>Expand on the problem introduced in the title with a minimum of 20 characters.</small>
+                    </div>
+                    <div class="card-body">
+
+
+                        <label for="body"></label>
+                        <textarea class="form-control" id="body" th:field="*{body}" required
+                                  minlength="20"></textarea>
+                        <div class="invalid-feedback">The description must have at least 20 characters</div>
+                        <div class="valid-feedback">Looks good!</div>
+                        <div th:if="${#fields.hasErrors('body')}" th:errors="*{body}" class="alert alert-warning"
+                             role="alert">
+                        </div>
+                        <br/>
+                        <button class="btn btn-secondary" type="button" id="bold-button"><i class="fa fa-bold"></i>
+                        </button>
+                        <button class="btn btn-secondary" type="button" id="italic-button"><i class="fa fa-italic"></i>
+                        </button>
+                        <button class="btn btn-secondary" type="button" id="link-button"><i class="fa fa-link"></i>
+                        </button>
+                        <button class="btn btn-secondary" type="button" id="code-button"><i class="fa fa-code"></i>
+                        </button>
+
+                        <button class="btn btn-secondary" type="button" id="code-block-button"><i
+                                class="fa fa-code"></i>block
+                        </button>
+                        <button class="btn btn-secondary" type="button" id="list-button"><i class="fa fa-list"></i>
+                        </button>
+
+                        <!--                        <input class="btn btn-primary" type="file" id="image-button" name="imageFiles" multiple><i-->
+                        <!--                            class="fa fa-image"></i></input>&ndash;&gt;-->
+                        <!--                        <input class="btn btn-primary" type="file" id="image-button" name="imageFiles" multiple><i-->
+                        <!--                            class="fa fa-image"></i></input>-->
+                        <div>
+                            <label for="images" class="btn btn-secondary"><i class="fa fa-image"></i> </label>
+                            <input type="file" id="images" name="images" hidden="hidden">
+                        </div>
+
+                        <br/>
+                        <div id="preview" class="mt-2 p-2 card shadow-4-strong"></div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-md-12 mx-auto">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Tags</h4>
+                                <small>Provide some relevant tags to describe your question </small>
+                            </div>
+                            <div class="card-body">
+                                <div th:replace="~{fragments/utils.html :: tagHandler(*{tags})}">
+                                </div>
+                                <!--<div class="select-wrapper">
+                                    <select id="mySelect" class="form-select" required th:field="*{tags}" name="tags"
+                                            multiple="multiple" size="1" onfocus="this.size=5;"
+                                            aria-label="multiple select example">
+                                        <option selected disabled value="">Choose one or more relevant tag</option>
+                                        <option th:each="tag : ${T(uge.fr.ugeoverflow.model.Tag.TAG_TYPE).values()}"
+                                                th:value="${tag}" th:text="${tag}"></option>
+                                    </select>
+                                </div>-->
+                                <div class="selected-items-wrapper"></div>
+                                <div class="invalid-feedback" id="tags-error"></div>
+                            </div>
+                            <div th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}" class="alert alert-warning"
+                                 role="alert">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-5 mx-auto">
+                        <button type="submit" form="create-question-form" class="btn btn-primary btn-block">Submit
+                            question
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+    <script>
+        const converter = new showdown.Converter();
+
+        const bodyTextarea = document.getElementById('body');
+        const previewDiv = document.getElementById('preview');
+        const imageInput = document.getElementById('images');
+        // var imageNameInput = document.getElementById('image-name');
+
+        bodyTextarea.addEventListener('input', function () {
+            previewDiv.innerHTML = converter.makeHtml(bodyTextarea.value);
+
+            const imgElements = previewDiv.getElementsByTagName('img');
+            for (let i = 0; i < imgElements.length; i++) {
+                let imgElement = imgElements[i];
+                let imgSrc = imgElement.getAttribute('src');
+                let imgName = imgSrc.split('/').pop(); // extract file name from image source
+                let imgFromLocalStorage = localStorage.getItem(imgName);
+                if (imgFromLocalStorage !== null) {
+                    imgElement.setAttribute('src', imgFromLocalStorage);
+                }
+            }
+        });
+
+        imageInput.addEventListener('change', function () {
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+            reader.onload = (function (file) {
+                return function (e) {
+                    var imageSrc = e.target.result;
+                    // var imageName = imageNameInput.value || file.name;
+                    // file.name = imageName;
+                    insertImageSyntax(imageSrc, file.name);
+                };
+            })(file);
+            reader.readAsDataURL(file);
+        });
+
+        function insertImageSyntax(imageSrc, imageName) {
+            bodyTextarea.value += '<img src="http://localhost:8080/images/' + imageName + '" alt="' + imageName + '"/>\n';
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            previewDiv.appendChild(img);
+
+            // save image to local storage
+            localStorage.setItem(imageName, imageSrc);
+
+            // // add image name to FormData object
+            // var formData = new FormData(document.getElementById('create-question-form'));
+            // formData.append('imageNames', imageName);
+            // imageInput.value = null; // reset file input
+        }
+
+
+    </script>
+
+
+</div>
+
+<script type="text/javascript" defer th:src="@{/js/prism.js}"></script>
+
+</body>
+</html>

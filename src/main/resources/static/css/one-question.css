@@ -1,0 +1,60 @@
+/*textarea {*/
+/*    width: 400px;*/
+/*    height: 200px;*/
+/*}*/
+
+/* This CSS rule applies to the "container" class in the HTML */
+/*.container {*/
+/*    margin-top: 10px;*/
+/*    background-color: #f7f7f7;*/
+/*    padding: 10px;*/
+/*}*/
+
+
+
+/* This CSS rule applies to the "card" class in the HTML */
+/*.card {*/
+/*    border: 1px solid #ccc;*/
+/*    border-radius: 5px;*/
+/*    box-shadow: 2px 2px 5px #ccc;*/
+/*    padding: 10px;*/
+/*}*/
+
+/* This CSS rule applies to the "btn-primary" class in the HTML */
+/*.btn-primary {*/
+/*    background-color: #007bff;*/
+/*    border-color: #007bff;*/
+/*    color: #fff;*/
+/*}*/
+hr {
+    border-top: 2px solid black; font-weight: bold;
+}
+.comment-text {
+    min-width: 0;
+    flex-basis: 0;
+    padding-left: 6px;
+    padding-right: 6px;
+
+}
+.comment-text:hover{transition:none;border-bottom: 1px solid; border-top:1px solid #ccc;border-radius:5px;padding:10px;box-shadow:2px 2px 5px #ccc; flex-grow:1}
+.comment-text{min-width: 0;flex-basis: 0;padding:10px;margin-left: 20%; transition:none;border-bottom: 1px ; border-top:1px  #ccc;border-radius:5px;box-shadow:2px 2px 5px #ccc; flex-grow:1}
+
+/* This CSS rule applies to the "badge" class in the HTML */
+/*.badge {*/
+/*    font-size: 0.8rem;*/
+/*    padding: 0.3rem 0.5rem;*/
+/*    border-radius: 5rem;*/
+/*}*/
+/*.comment-copy a {*/
+/*    text-decoration: underline*/
+/*}*/
+
+
+/*.s-prose a:not(.post-tag):not(.s-tag):not(.badge-tag):not(.s-link__visited):not(.s-btn):not(.s-editor-btn):visited, .s-prose a:not(.post-tag):not(.s-tag):not(.badge-tag):not(.s-link__visited):not(.s-btn):not(.s-editor-btn):link {*/
+/*    color: #0077cc;*/
+/*    text-decoration: underline*/
+/*}*/
+/*.mathjax {*/
+/*    width: 115px;*/
+/*    height: 55px;*/
+/*}*/
