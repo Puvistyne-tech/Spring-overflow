@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import uge.fr.ugeoverflow.dto.answer.AnswerDTO;
 import uge.fr.ugeoverflow.dto.answer.NewAnswerDTO;
+import uge.fr.ugeoverflow.dto.question.OneQuestionDTO;
 import uge.fr.ugeoverflow.service.AnswerService;
 import uge.fr.ugeoverflow.service.QuestionService;
 import uge.fr.ugeoverflow.service.UserService;
@@ -46,11 +47,12 @@ public class AnswerRestController {
     }
     @PostMapping("/{questionId}")
     @PreAuthorizeAuthUser
-    public ResponseEntity<ResponseMessage> createAnswer(@PathVariable UUID questionId, @RequestBody NewAnswerDTO answerDTO, Authentication authentication) {
+    public ResponseEntity<OneQuestionDTO> createAnswer(@PathVariable UUID questionId, @RequestBody NewAnswerDTO answerDTO, Authentication authentication) {
         answerService.validateAnswer(answerDTO);
         var user=userService.loadUserByUsername(authentication.getName());
         var newAnswerId = questionService.answer(questionId,  answerDTO);
-        return ResponseEntity.ok(new ResponseMessage("answer '"+newAnswerId+"'successfully created for question '"+questionId +"'",newAnswerId ));
+        return ResponseEntity.ok(questionService.getQuestionById(questionId));
+       //return ResponseEntity.ok(new ResponseMessage("answer '"+newAnswerId+"'successfully created for question '"+questionId +"'",newAnswerId ));
     }
     @PutMapping("/{id}")
     @PreAuthorizeAuthUser
