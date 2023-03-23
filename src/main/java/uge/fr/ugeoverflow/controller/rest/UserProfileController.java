@@ -11,8 +11,6 @@ import uge.fr.ugeoverflow.model.User;
 import uge.fr.ugeoverflow.service.UserService;
 import uge.fr.ugeoverflow.utils.authorization.PreAuthorizeAuthUser;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/auth/api/v1/users")
 @PreAuthorizeAuthUser

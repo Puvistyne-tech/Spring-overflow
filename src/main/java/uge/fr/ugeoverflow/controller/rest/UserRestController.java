@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import uge.fr.ugeoverflow.dto.profile.UserBoxDTO;
 import uge.fr.ugeoverflow.dto.profile.UserLoginDTO;
 import uge.fr.ugeoverflow.dto.profile.UserRegisterDTO;
 import uge.fr.ugeoverflow.model.User;
@@ -28,10 +29,10 @@ public class UserRestController {
         userService.validateSignInUser(userLoginDTO);
         var token = userService.loginUser(userLoginDTO);
         var userBoxDTO = userService.loadUserByUsername(userLoginDTO.getUsername());
-        return ResponseEntity.status(HttpStatus.OK).body(new UserSignInDTO(userBoxDTO, token));
+        return ResponseEntity.status(HttpStatus.OK).body(new UserSignInDTO(UserBoxDTO.fromUser(userBoxDTO), token));
     }
 
-    private record UserSignInDTO(Object user, String token) {
+    private record UserSignInDTO(UserBoxDTO user, String token) {
     }
 
 

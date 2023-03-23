@@ -16,17 +16,11 @@ public abstract class Overflow {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(
-            mappedBy = "overflow",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "overflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
     @Lob
-    @Column(name = "body",
-            nullable = false)
+    @Column(name = "body", nullable = false)
     private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)

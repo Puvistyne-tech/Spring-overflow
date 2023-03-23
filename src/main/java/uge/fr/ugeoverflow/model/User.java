@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import uge.fr.ugeoverflow.security.UserRole;
 
 import java.time.LocalDateTime;
-import java.util.*;
-import java.time.Period;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")

@@ -10,7 +10,6 @@ import java.util.Set;
 @Table(name = "answer")
 public class Answer extends Overflow {
 
-    //ManyToOne is EAGER by default
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
     public Question question;

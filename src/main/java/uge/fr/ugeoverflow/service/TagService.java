@@ -50,4 +50,22 @@ public class TagService {
         return tagRepository.existsByTagType(tagType);
     }
 
+
+    @Transactional
+    public List<QuestionDTO> getTagsWithQuestions(String tagType) {
+        var tags = tagRepository.findQuestionsByTagType(Tag.TAG_TYPE.valueOf(tagType));
+        return tags.stream().map(q -> {
+                    var question = new QuestionDTO();
+                    question.setId(q.getId());
+                    question.setTitle(q.getTitle());
+                    question.setBody(q.getBody());
+                    question.setCreationTime(q.getCreationTime());
+                    question.setUser(q.getUser());
+                    question.setTags(q.getTags());
+                    question.setTags(q.getTags());
+                    question.setAnswersCounter(q.getAnswersCounter());
+                    return question;
+                }
+        ).toList();
+    }
 }
