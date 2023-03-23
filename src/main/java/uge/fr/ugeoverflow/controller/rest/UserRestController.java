@@ -11,6 +11,7 @@ import uge.fr.ugeoverflow.model.User;
 import uge.fr.ugeoverflow.service.UserService;
 import uge.fr.ugeoverflow.utils.ResponseMessage;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,6 +34,11 @@ public class UserRestController {
     }
 
     private record UserSignInDTO(UserBoxDTO user, String token) {
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<UserBoxDTO>> getAllUsers() {
+        return ResponseEntity.ok().body(userService.getAllUsers());
     }
 
 

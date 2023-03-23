@@ -21,10 +21,7 @@ import uge.fr.ugeoverflow.repository.FollowRelationshipRepository;
 import uge.fr.ugeoverflow.repository.UserRepository;
 import uge.fr.ugeoverflow.security.UserRole;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -361,5 +358,15 @@ public class UserService implements UserDetailsService {
             model.addAttribute("error", "Password too short, please choose another one.");
         }
         return model;
+    }
+
+    public List<UserBoxDTO> getAllUsers() {
+        var usersIt = userRepository.findAll();
+        List<User> users = StreamSupport.stream(usersIt.spliterator(), false).toList();
+        List<UserBoxDTO> userBoxDTOS = new ArrayList<>();
+        for (User user : users) {
+            userBoxDTOS.add(new UserBoxDTO(user));
+        }
+        return userBoxDTOS;
     }
 }
