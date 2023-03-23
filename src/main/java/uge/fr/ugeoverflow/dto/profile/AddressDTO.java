@@ -19,6 +19,15 @@ public class AddressDTO {
         this.zipCode = zipCode;
     }
 
+    public AddressDTO(Address address) {
+        if (address != null) {
+            this.street = address.getStreet() == null ? "" : address.getStreet();
+            this.city = address.getCity() == null ? "" : address.getCity();
+            this.country = address.getCountry() == null ? "" : address.getCountry();
+            this.zipCode = address.getZipCode() == null ? "" : address.getZipCode();
+        }
+    }
+
     public static AddressDTO fromAddress(Address address) {
         var addressDTO = new AddressDTO();
         addressDTO.setStreet(address.getStreet());

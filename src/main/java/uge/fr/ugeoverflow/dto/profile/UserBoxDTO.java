@@ -11,6 +11,8 @@ public class UserBoxDTO {
     public String email;
     public String profilePicture="https://i.ytimg.com/vi/3Cm1sqcHiJY/maxresdefault.jpg";
 
+    public AddressDTO address;
+
     public UserBoxDTO() {
     }
 
@@ -19,6 +21,7 @@ public class UserBoxDTO {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.profilePicture = user.getImageUrl()==null ? "" : user.getImageUrl();
+        this.address = new AddressDTO(user.getAddress());
     }
 
     public UserBoxDTO(UUID id, String username,String email, String profilePicture) {
@@ -63,6 +66,14 @@ public class UserBoxDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public AddressDTO getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressDTO address) {
+        this.address = address;
     }
 }
 

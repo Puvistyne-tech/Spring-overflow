@@ -360,6 +360,7 @@ public class UserService implements UserDetailsService {
         return model;
     }
 
+    @Transactional
     public List<UserBoxDTO> getAllUsers() {
         var usersIt = userRepository.findAll();
         List<User> users = StreamSupport.stream(usersIt.spliterator(), false).toList();
