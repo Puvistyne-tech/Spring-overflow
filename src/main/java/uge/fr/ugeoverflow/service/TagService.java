@@ -35,10 +35,10 @@ public class TagService {
         });
     }
 
-    //    @Transactional
+    @Transactional
     public List<TagDto> getAllTagsQuestion() {
         var tags = tagRepository.findAll();
-        return StreamSupport.stream(tags.spliterator(), false).map(tag -> new TagDto(tag.getTagType().name(), tag.getDescription(), tag.getQuestionCount())).toList();
+        return StreamSupport.stream(tags.spliterator(), false).map(tag -> new TagDto(tag.getTagType().name(), tag.getDescription(), tag.getQuestionCount(),tag.getQuestions())).toList();
     }
 
     @Transactional

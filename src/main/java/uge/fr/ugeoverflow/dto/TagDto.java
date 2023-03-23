@@ -1,16 +1,25 @@
 package uge.fr.ugeoverflow.dto;
 
+import uge.fr.ugeoverflow.model.Question;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class TagDto {
 
     private String tagType;
     private String description;
 
     private int questionCount;
+    private Set<Question> questions = new HashSet<>();
 
-    public TagDto(String tagType, String description , int questionCount) {
+
+
+    public TagDto(String tagType, String description , int questionCount , Set<Question> questions) {
         this.tagType = tagType;
         this.description = description;
         this.questionCount = questionCount;
+        this.questions= questions;
 
     }
 
