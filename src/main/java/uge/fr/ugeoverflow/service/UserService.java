@@ -180,7 +180,10 @@ public class UserService implements UserDetailsService {
         oldUser.setLastname(user.getLastName());
         oldUser.setEmail(user.getEmail());
         oldUser.setBio(user.getBio());
-        oldUser.setImageUrl(user.getProfilePicture());
+        if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty() || user.getProfilePicture().equals("") || user.getProfilePicture().equals("null")){
+        } else{
+            oldUser.setImageUrl(user.getProfilePicture());
+        }
         var oldAddress = oldUser.getAddress();
         var newAddress = user.getAddress();
         if (oldAddress == null) {

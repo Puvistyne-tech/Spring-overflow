@@ -29,7 +29,10 @@ public class ImageService {
         img.setData(image.getBytes());
         img.setName(image.getOriginalFilename());
         var imageFound = imageRepository.findByName(image.getOriginalFilename());
-        return imageFound.orElseGet(() -> imageRepository.save(img));
+        if (imageFound.isPresent()) {
+            imageRepository.delete(imageFound.get());
+        }
+        return imageRepository.save(img);
     }
 
     public Image uploadImage(byte[] image, String name) throws IOException {
@@ -52,6 +55,7 @@ public class ImageService {
     public Image getImageByName(String name) {
         return imageRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Invalid image name:" + name));
     }
+
     public Image getImageByNameContains(String name) {
         return imageRepository.findFirstByNameContains(name).orElseThrow(() -> new IllegalArgumentException("Invalid image name:" + name));
     }
