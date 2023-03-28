@@ -32,6 +32,14 @@ public class ImageService {
         return imageFound.orElseGet(() -> imageRepository.save(img));
     }
 
+    public Image uploadImage(byte[] image, String name) throws IOException {
+        Image img = new Image();
+        img.setData(image);
+        img.setName(name);
+        var imageFound = imageRepository.findByName(name);
+        return imageFound.orElseGet(() -> imageRepository.save(img));
+    }
+
 
     public Image getImageByID(UUID id) {
         return imageRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid image Id:" + id));

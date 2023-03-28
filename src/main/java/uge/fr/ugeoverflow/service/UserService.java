@@ -15,6 +15,7 @@ import uge.fr.ugeoverflow.dto.profile.UserRegisterDTO;
 import uge.fr.ugeoverflow.dto.profile.UserBoxDTO;
 import uge.fr.ugeoverflow.dto.profile.UserProfileDTO;
 import uge.fr.ugeoverflow.error.user.*;
+import uge.fr.ugeoverflow.model.Address;
 import uge.fr.ugeoverflow.model.FollowRelationship;
 import uge.fr.ugeoverflow.model.User;
 import uge.fr.ugeoverflow.repository.FollowRelationshipRepository;
@@ -67,6 +68,9 @@ public class UserService implements UserDetailsService {
         if (!user.getEmail().isEmpty() && !user.getEmail().equals(authenticatedUser.getEmail())) {
             authenticatedUser.setEmail(user.getEmail());
         }
+        if (!user.getBio().isEmpty() && !user.getBio().equals(authenticatedUser.getBio())) {
+            authenticatedUser.setBio(user.getBio());
+        }
 
     }
 
@@ -114,7 +118,7 @@ public class UserService implements UserDetailsService {
         if (!checkPassword(userLoginDTO.getPassword(), user.getPassword())) {
             throw new PasswordIncorrectException();
         }
-        var usr=userRepository.save(user);
+        var usr = userRepository.save(user);
 //        var userBoxDTO = new UserBoxDTO(usr);
         return user.getToken();
     }
@@ -141,11 +145,23 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+
     public User updateUser(User user) {
 
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
         // Create a new authentication with the updated user
-        User updatedUser = userRepository.save(user);
+
+        var oldUser = userRepository.findByUsername(currentAuth.getName()).orElseThrow(UsernameNotFoundException::new);
+
+        oldUser.setFirstname(user.getFirstname());
+        oldUser.setLastname(user.getLastname());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setBio(user.getBio());
+        oldUser.setImageUrl(user.getImageUrl());
+        oldUser.setAddress(user.getAddress());
+        User updatedUser = userRepository.save(oldUser);
+
+
         Authentication updatedAuth = new UsernamePasswordAuthenticationToken(updatedUser, currentAuth.getCredentials(), currentAuth.getAuthorities());
 
         // Set the updated authentication in the security context holder
@@ -154,9 +170,37 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public User updateUser(UserProfileDTO user) {
+        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+        // Create a new authentication with the updated user
+
+        var oldUser = userRepository.findByUsername(currentAuth.getName()).orElseThrow(UsernameNotFoundException::new);
+
+        oldUser.setFirstname(user.getFirstName());
+        oldUser.setLastname(user.getLastName());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setBio(user.getBio());
+        oldUser.setImageUrl(user.getProfilePicture());
+        var oldAddress = oldUser.getAddress();
+        var newAddress = user.getAddress();
+        if (oldAddress == null) {
+            oldAddress = new Address(newAddress);
+        } else {
+            var temp = newAddress.split("\n");
+            oldAddress.setStreet(temp[0]);
+            oldAddress.setCity(temp[1]);
+            oldAddress.setCountry(temp[2]);
+            oldAddress.setZipCode(temp[3]);
+        }
+        oldUser.setAddress(oldAddress);
+        User updatedUser = userRepository.save(oldUser);
+        return updatedUser;
+    }
+
+    @Transactional
     public List<UsersDto> getUsers() {
-        var users =  userRepository.findAll();
-        return StreamSupport.stream(users.spliterator(), false).map(user -> new UsersDto(user.getImageUrl(), user.getUsername(),(user.getAddress() != null) ? user.getAddress().getCountry() : "")).toList();
+        var users = userRepository.findAll();
+        return StreamSupport.stream(users.spliterator(), false).map(user -> new UsersDto(user.getImageUrl(), user.getUsername(), (user.getAddress() != null) ? user.getAddress().getCountry() : "")).toList();
     }
 
 
@@ -248,7 +292,13 @@ public class UserService implements UserDetailsService {
 
 
     public boolean checkIfUserDtoIsEqualsUserAuth(UserProfileDTO userAuth, User user) {
-        return user.getUsername().equals(userAuth.getUsername()) && user.getFirstname().equals(userAuth.getFirstName()) && user.getLastname().equals(userAuth.getLastName()) && user.getEmail().equals(userAuth.getEmail());
+        return
+                user.getUsername().equals(userAuth.getUsername()) &&
+                        user.getFirstname().equals(userAuth.getFirstName()) &&
+                        user.getLastname().equals(userAuth.getLastName()) &&
+                        user.getEmail().equals(userAuth.getEmail()) &&
+                        user.getBio().equals(userAuth.getBio())
+                ;
     }
 
 //    public void follow(UUID followerId, UUID followedId) {

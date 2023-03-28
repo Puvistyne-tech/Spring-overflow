@@ -44,10 +44,26 @@ public class UserProfileController {
     }
 
 
-    @PutMapping
-    public ResponseEntity<UserProfileDTO> updateUser(Authentication authentication, User user) {
-        User updatedUser = userService.updateUser(user);
-        return new ResponseEntity<>(userService.getMyProfile(updatedUser.getUsername()), HttpStatus.OK);
+    @PostMapping("/profile/update")
+    @PreAuthorizeAuthUser
+    public ResponseEntity<UserProfileDTO> updateUser(@RequestBody UserProfileDTO user, Authentication authentication) {
+        if (authentication.getName() == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (!authentication.getName().equals(user.getUsername()))
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+//        User authenticatedUser = userService.loadUserByUsername(authentication.getName());
+//
+//        if (userService.checkIfUsernameExist(user.getUsername()) && !user.getUsername().equals(authenticatedUser.getUsername())) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        //if the user has entered a new detail, we update it in the database
+//        if (!userService.checkIfUserDtoIsEqualsUserAuth(user, authenticatedUser)) {
+//            userService.updateUserProfileInformationValidation(user, authenticatedUser);
+//            userService.updateUser(authenticatedUser);
+//        }
+        userService.updateUser(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserProfile(user.getUsername()));
     }
 
     @GetMapping("/{username}/follow")

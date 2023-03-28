@@ -28,6 +28,14 @@ public class Address {
         this.zipCode = zipCode;
     }
 
+    public Address(String address) {
+        String[] addressArray = address.split("\n");
+        this.street = addressArray[0];
+        this.city = addressArray[1];
+        this.country = addressArray[2];
+        this.zipCode = addressArray[3];
+    }
+
     public String getStreet() {
         return street;
     }
@@ -63,5 +71,13 @@ public class Address {
     @Override
     public String toString() {
         return street + "\n" + city + '\n' + country + '\n' + zipCode + '.';
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

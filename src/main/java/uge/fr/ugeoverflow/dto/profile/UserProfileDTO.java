@@ -57,6 +57,17 @@ public class UserProfileDTO {
         this.profilePicture = profilePicture;
     }
 
+    public static User toUser(UserProfileDTO userProfileDTO) {
+        User user = new User();
+        user.setFirstname(userProfileDTO.getFirstName());
+        user.setLastname(userProfileDTO.getLastName());
+        user.setUsername(userProfileDTO.getUsername());
+        user.setEmail(userProfileDTO.getEmail());
+        user.setBio(userProfileDTO.getBio());
+        user.setImageUrl(userProfileDTO.getProfilePicture());
+        return user;
+    }
+
 
     public String getUsername() {
         return username;
